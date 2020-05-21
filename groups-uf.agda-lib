@@ -1,0 +1,3 @@
+name: groups-uf
+include: src
+depend: cubical
