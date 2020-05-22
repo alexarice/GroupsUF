@@ -63,8 +63,8 @@ inc-rep a x g h p =
 
 -- Any Representable is the image of an included element
 
-cancelₗ : ∀ x y z → z · x ≡ z · y → x ≡ y
-cancelₗ x y z p =
+cancellem : ∀ x y z → z · x ≡ z · y → x ≡ y
+cancellem x y z p =
   x              ≡⟨ sym (group-lid 𝓖 x) ⟩
   ₁ · x          ≡⟨ sym (cong (_· x) (group-linv 𝓖 z)) ⟩
   (z ⁻¹ · z) · x ≡⟨ sym (group-assoc 𝓖 (z ⁻¹) z x) ⟩
@@ -81,7 +81,7 @@ rep-inc a@(f , finv , ε , η) rf = (f ₁) , sigmaPath→pathSigma _ _ (i , sig
     i = funExt λ x → rf x ₁ x (sym (group-lid 𝓖 x))
 
     lem : finv ₁ ≡ (f ₁) ⁻¹
-    lem = cancelₗ (finv ₁) (f ₁ ⁻¹) (f ₁)
+    lem = cancellem (finv ₁) (f ₁ ⁻¹) (f ₁)
       (f ₁ · finv ₁ ≡⟨ sym (rf (finv ₁) ₁ (finv ₁) (sym (group-lid 𝓖 (finv ₁)))) ⟩
        f (finv ₁) ≡⟨ ε ₁ (finv ₁) refl ⟩
        ₁ ≡⟨ sym (group-rinv 𝓖 (f ₁)) ⟩
