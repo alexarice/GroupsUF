@@ -4,11 +4,11 @@ open import Cubical.Structures.Group
 
 module Groups.Symmetric.Inclusion {ℓ} (𝓖 : Group {ℓ}) where
 
-open import Groups.Symmetric
-open import Cubical.Foundations.Prelude
 open import Cubical.Data.Sigma
+open import Cubical.Foundations.Prelude
 open import Cubical.Functions.FunExtEquiv
 open import Function.Inverse
+open import Groups.Symmetric
 
 open group-·syntax 𝓖
 

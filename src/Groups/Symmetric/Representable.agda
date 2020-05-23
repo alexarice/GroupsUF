@@ -4,17 +4,17 @@ open import Cubical.Structures.Group
 
 module Groups.Symmetric.Representable {ℓ} (𝓖 : Group {ℓ}) where
 
-open import Cubical.Foundations.Prelude
+open import Cubical.Data.Sigma
+open import Cubical.Data.Vec
+open import Cubical.Foundations.Equiv
 open import Cubical.Foundations.HLevels
 open import Cubical.Foundations.Isomorphism
-open import Cubical.Data.Sigma
+open import Cubical.Foundations.Prelude
+open import Cubical.Foundations.SIP
 open import Cubical.Functions.FunExtEquiv
+open import Function.Inverse
 open import Groups.Symmetric
 open import Groups.Symmetric.Inclusion 𝓖
-open import Cubical.Foundations.Equiv
-open import Cubical.Data.Vec
-open import Cubical.Foundations.SIP
-open import Function.Inverse
 
 open group-·syntax 𝓖
 open group-operation-syntax
