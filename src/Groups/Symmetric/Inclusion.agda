@@ -8,6 +8,7 @@ open import Groups.Symmetric
 open import Cubical.Foundations.Prelude
 open import Cubical.Data.Sigma
 open import Cubical.Functions.FunExtEquiv
+open import Function.Inverse
 
 open group-·syntax 𝓖
 
@@ -59,16 +60,4 @@ inv-involution g h =
         (g · h) · h ⁻¹ · g ⁻¹ ∎
 
 inc-homo : (x y : ⟨ 𝓖 ⟩) → inc (x · y) ≡ group-operation (SymGroup) (inc x) (inc y)
-inc-homo x y = sigmaPath→pathSigma _ _ (i , sigmaPath→pathSigma _ _ (ii , (sigmaPath→pathSigma _ _ (iii , iv))))
-  where
-    i : (λ g → (x · y) · g) ≡ λ g → x · (y · g)
-    i = funExt (λ g → sym (group-assoc 𝓖 x y g))
-
-    ii : _
-    ii = funExt (λ g → (transportRefl _) ∙ cong₂ _·_ (inv-involution x y) (transportRefl _) ∙ sym (group-assoc 𝓖 (y ⁻¹) (x ⁻¹) g))
-
-    iii : _
-    iii = funExt₃ (λ a b c → group-is-set 𝓖 _ _ _ _)
-
-    iv : _
-    iv = funExt₃ (λ a b c → group-is-set 𝓖 _ _ _ _ )
+inc-homo x y = inverse-equality-lemma _ _ (group-is-set 𝓖) (group-is-set 𝓖) λ g → sym (group-assoc 𝓖 x y g)

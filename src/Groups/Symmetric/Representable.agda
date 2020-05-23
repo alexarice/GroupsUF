@@ -14,8 +14,10 @@ open import Groups.Symmetric.Inclusion 𝓖
 open import Cubical.Foundations.Equiv
 open import Cubical.Data.Vec
 open import Cubical.Foundations.SIP
+open import Function.Inverse
 
 open group-·syntax 𝓖
+open group-operation-syntax
 
 Representable : ⟨ SymGroup ⟩ → Type ℓ
 Representable f = ∀ x g h → x ≡ g · h → fst f x ≡ fst f g · h
@@ -23,7 +25,7 @@ Representable f = ∀ x g h → x ≡ g · h → fst f x ≡ fst f g · h
 Repr : Type ℓ
 Repr = Σ[ f ∈ ⟨ SymGroup ⟩ ] Representable f
 
--- Representable f is a Set
+-- Representable is a Prop and so Repr is a set
 
 rep-prop : (f : ⟨ SymGroup ⟩) → isProp (Representable f)
 rep-prop f = isPropΠ2 (λ x y → isPropΠ2 λ w z → (group-is-set 𝓖 (fst f x) (fst f y · w)))
@@ -33,25 +35,54 @@ repΣ-set = isSetΣ (group-is-set SymGroup) λ f → isProp→isSet (rep-prop f)
 
 -- Representable elments are closed under group operations
 
-rep-comp : ∀ (f f′ : ⟨ SymGroup ⟩) → Representable f → Representable f′ → Representable (group-operation SymGroup f f′)
-rep-comp f f′ rf rf′ x g h p = rf (fst f′ x) (fst f′ g) h (rf′ x g h p)
+rep-comp : ∀ (f f′ : Repr) → Repr
+rep-comp (f , rf) (f′ , rf′) = f ·⟨ SymGroup ⟩ f′ , λ x g h p → rf (fst f′ x) (fst f′ g) h (rf′ x g h p)
 
-rep-id : Representable (group-id SymGroup)
-rep-id x g h p = p
+rep-id : Repr
+rep-id = group-id SymGroup , λ x g h p → p
 
-rep-inv : (f : ⟨ SymGroup ⟩) → Representable f → Representable (group-inv SymGroup f)
-rep-inv (f , finv , ε , η) rf x g h p = η (finv g · h) x (p ∙ cong (_· h) (sym (ε g (finv g) refl)) ∙ sym (rf (finv g · h) (finv g) h refl))
+rep-inv : (f : Repr) → Repr
+rep-inv (a@(f , finv , ε , η) , rf) = (group-inv SymGroup a) ,
+  λ x g h p → η (finv g · h) x
+   (x              ≡⟨ p ⟩
+    g · h          ≡⟨ cong (_· h) (sym (ε g (finv g) refl)) ⟩
+    f (finv g) · h ≡⟨ sym (rf (finv g · h) (finv g) h refl) ⟩
+    f (finv g · h) ∎)
+
+-- Associativity and Unitality still hold by definition
+
+rep-assoc : (f g h : Repr) → rep-comp f (rep-comp g h) ≡ rep-comp (rep-comp f g) h
+rep-assoc f g h = refl
+
+rep-lid : (f : Repr) → rep-comp rep-id f ≡ f
+rep-lid f = refl
+
+rep-rid : (f : Repr) → rep-comp f rep-id ≡ f
+rep-rid f = refl
+
+-- Reprs are equal if the underlying object is
+
+repr-equality : (f g : Repr) → fst f ≡ fst g → f ≡ g
+repr-equality (f , fr) (g , gr) p = ΣPathP (p , (isProp→PathP (λ i → rep-prop (p i)) fr gr))
+
+-- And so the inverses work as expected
+
+rep-inv-left : (f : Repr) → rep-comp (rep-inv f) f ≡ rep-id
+rep-inv-left f = repr-equality (rep-comp (rep-inv f) f) rep-id (group-linv SymGroup (fst f))
+
+rep-inv-right : (f : Repr) → rep-comp f (rep-inv f) ≡ rep-id
+rep-inv-right f = repr-equality (rep-comp f (rep-inv f)) rep-id (group-rinv SymGroup (fst f))
 
 -- and hence form a group
 
 RSymGroup : Group {ℓ}
 RSymGroup =
   Repr ,
-  (λ where (f , rf) (f′ , rf′) → (group-operation SymGroup f f′) , rep-comp f f′ rf rf′) ,
-  (repΣ-set , λ x y z → refl) ,
-  ((group-id SymGroup) , rep-id) ,
-  (λ where (g , rg) → refl , refl) ,
-  (λ where (x , rx) → (group-inv SymGroup x , rep-inv x rx) , sigmaPath→pathSigma _ _ (group-rinv SymGroup x , rep-prop (group-id SymGroup) _ _) , sigmaPath→pathSigma _ _ (group-linv SymGroup x , rep-prop (group-id SymGroup) _ _))
+  rep-comp ,
+  (repΣ-set , rep-assoc) ,
+  rep-id ,
+  (λ g → rep-lid g , rep-rid g) ,
+  (λ x → (rep-inv x , rep-inv-right x , rep-inv-left x))
 
 -- Any included element is Representable
 
@@ -63,32 +94,9 @@ inc-rep a x g h p =
 
 -- Any Representable is the image of an included element
 
-cancellem : ∀ x y z → z · x ≡ z · y → x ≡ y
-cancellem x y z p =
-  x              ≡⟨ sym (group-lid 𝓖 x) ⟩
-  ₁ · x          ≡⟨ sym (cong (_· x) (group-linv 𝓖 z)) ⟩
-  (z ⁻¹ · z) · x ≡⟨ sym (group-assoc 𝓖 (z ⁻¹) z x) ⟩
-  z ⁻¹ · (z · x) ≡⟨ cong (z ⁻¹ ·_) p ⟩
-  z ⁻¹ · (z · y) ≡⟨ group-assoc 𝓖 (z ⁻¹) z y ⟩
-  (z ⁻¹ · z) · y ≡⟨ cong (_· y) (group-linv 𝓖 z) ⟩
-  ₁ · y          ≡⟨ group-lid 𝓖 y ⟩
-  y ∎
-
-rep-inc : ∀ (f : ⟨ SymGroup ⟩) → Representable f → Σ[ g ∈ ⟨ 𝓖 ⟩ ] f ≡ inc g
-rep-inc a@(f , finv , ε , η) rf = (f ₁) , sigmaPath→pathSigma _ _ (i , sigmaPath→pathSigma _ _ (transportRefl finv ∙ ii , sigmaPath→pathSigma _ _ (funExt₃ (λ x y z → group-is-set 𝓖 _ _ _ _) , funExt₃ (λ x y z → group-is-set 𝓖 _ _ _ _))))
-  where
-    i : (λ x → f x) ≡ (λ x → f ₁ · x)
-    i = funExt λ x → rf x ₁ x (sym (group-lid 𝓖 x))
-
-    lem : finv ₁ ≡ (f ₁) ⁻¹
-    lem = cancellem (finv ₁) (f ₁ ⁻¹) (f ₁)
-      (f ₁ · finv ₁ ≡⟨ sym (rf (finv ₁) ₁ (finv ₁) (sym (group-lid 𝓖 (finv ₁)))) ⟩
-       f (finv ₁) ≡⟨ ε ₁ (finv ₁) refl ⟩
-       ₁ ≡⟨ sym (group-rinv 𝓖 (f ₁)) ⟩
-       f ₁ · f ₁ ⁻¹ ∎)
-
-    ii : (λ x → finv x) ≡ (λ x → (f ₁ ⁻¹) · x)
-    ii = funExt λ x → (rep-inv a rf x ₁ x (sym (group-lid 𝓖 x))) ∙ cong (_· x) lem
+rep-inc : ∀ (f : Repr) → Σ[ g ∈ ⟨ 𝓖 ⟩ ] inc g ≡ fst f
+rep-inc (a@(f , rest) , rf) = (f ₁) ,
+  inverse-equality-lemma (inc (f ₁)) a (group-is-set 𝓖) (group-is-set 𝓖) λ x → sym (rf x ₁ x (sym (group-lid 𝓖 x)))
 
 -- We can now define incᵣ and show it is an equivalence
 
@@ -97,17 +105,17 @@ incᵣ g = inc g , inc-rep g
 
 incᵣ-iso : Iso ⟨ 𝓖 ⟩ Repr
 incᵣ-iso .Iso.fun = incᵣ
-incᵣ-iso .Iso.inv (f , fr) = fst (rep-inc f fr)
-incᵣ-iso .Iso.leftInv g = inc-injective (fst (rep-inc (inc g) (inc-rep g))) g (sym (snd (rep-inc (inc g) (inc-rep g))))
-incᵣ-iso .Iso.rightInv (f , fr) = ΣPathP ((sym (snd (rep-inc f fr))) , toPathP (rep-prop f _ _))
+incᵣ-iso .Iso.inv f = fst (rep-inc f)
+incᵣ-iso .Iso.leftInv g = inc-injective (fst (rep-inc (incᵣ g))) g (snd (rep-inc (incᵣ g)))
+incᵣ-iso .Iso.rightInv f = repr-equality (incᵣ (fst (rep-inc f))) f (snd (rep-inc f))
 
 incᵣ-equiv : ⟨ 𝓖 ⟩ ≃ Repr
 incᵣ-equiv = isoToEquiv incᵣ-iso
 
 -- And show it is a group isomorphism
 
-incᵣ-homo : ∀ g h → incᵣ (g · h) ≡ group-operation RSymGroup (incᵣ g) (incᵣ h)
-incᵣ-homo g h = ΣPathP (inc-homo g h , toPathP (rep-prop (group-operation SymGroup (inc g) (inc h)) _ _))
+incᵣ-homo : ∀ g h → incᵣ (g · h) ≡ incᵣ g ·⟨ RSymGroup ⟩ (incᵣ h)
+incᵣ-homo g h = repr-equality (incᵣ (g · h)) (incᵣ g ·⟨ RSymGroup ⟩ incᵣ h) (inc-homo g h)
 
 incᵣ-group-iso : 𝓖 ≃[ group-iso ] RSymGroup
 incᵣ-group-iso = incᵣ-equiv , λ where (g ∷ h ∷ []) → incᵣ-homo g h

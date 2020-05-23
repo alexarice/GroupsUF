@@ -20,13 +20,18 @@ private
 Inverse : (A : Type ℓ) (B : Type ℓ′) → Type (ℓ-max ℓ ℓ′)
 Inverse A B = Σ[ ↑ ∈ (A → B) ] Σ[ ↓ ∈ (B → A) ] (∀ b x → x ≡ ↓ b → ↑ x ≡ b) × (∀ a y → y ≡ ↑ a → ↓ y ≡ a)
 
+isSetΠ3 : ∀ {A : Type ℓ} {B : A → Type ℓ′} {C : (a : A) → B a → Type ℓ″}
+            {D : (a : A) → (b : B a) → (c : C a b) → Type ℓ‴} →
+            ((a : A) → (b : B a) → (c : C a b) → isSet (D a b c)) →
+            isSet ((a : A) → (b : B a) → (c : C a b) → D a b c)
+isSetΠ3 h = isSetΠ2 (λ x y → isSetΠ (λ z → h x y z))
 
 isSetInv : isSet A → isSet B → isSet (Inverse A B)
 isSetInv isSetA isSetB =
   isSetΣ (isSetΠ λ x → isSetB) λ f →
-    isSetΣ (isSetΠ (λ x → isSetA)) λ g →
-      isSet× (isSetΠ2 (λ x y → isSetΠ (λ z → isOfHLevelSuc 1 (isSetB (f y) x))))
-        (isSetΠ2 (λ x y → isSetΠ (λ z → isOfHLevelSuc 1 (isSetA (g y) x))))
+    isSetΣ (isSetΠ λ x → isSetA) λ g →
+      isSet× (isSetΠ3 λ x y z → isProp→isSet (isSetB (f y) x))
+             (isSetΠ3 λ x y z → isProp→isSet (isSetA (g y) x))
 
 infixr 30 _∘_
 _∘_ : Inverse B C → Inverse A B → Inverse A C
@@ -51,10 +56,20 @@ id-unit-right f = refl
 inv-inv : (f : Inverse A B) → Inverse B A
 inv-inv (f , g , p , q) = g , f , q , p
 
+inverse-equality-lemma : (f g : Inverse A B) → isSet A → isSet B → ((x : A) → fst f x ≡ fst g x) → f ≡ g
+inverse-equality-lemma {A = A} {B = B} (f , finv , εf , ηf) (g , ginv , εg , ηg) isSetA isSetB p =
+  ΣPathP (funExt p , toPathP (ΣPathP (funExt lem , toPathP (ΣPathP (funExt₃ (λ x y z → isSetB _ _ _ _) , funExt₃ (λ x y z → isSetA _ _ _ _))))))
+    where
+      lem : (x : B) → transp (λ i → A) i0 (finv (transp (λ j → B) i0 x)) ≡ ginv x
+      lem x =
+        transp (λ i → A) i0 (finv (transp (λ j → B) i0 x)) ≡⟨ transportRefl (finv (transp (λ j → B) i0 x)) ⟩
+        finv (transp (λ j → B) i0 x) ≡⟨ cong finv (transportRefl x) ⟩
+        finv x ≡⟨ cong finv (sym (εg x (ginv x) refl)) ⟩
+        finv (g (ginv x)) ≡⟨ ηf (ginv x) (g (ginv x)) (sym (p (ginv x))) ⟩
+        ginv x ∎
+
 inv-inv-left : isSet A → (f : Inverse A B) → inv-inv f ∘ f ≡ id-inv
-inv-inv-left isSetA (↑ , ↓ , ε , η) =  sigmaPath→pathSigma _ _
-  ((funExt (λ x → η _ _ refl)) , sigmaPath→pathSigma _ _ (funExt (λ x → (transportRefl _) ∙ η _ _ (cong ↑ (transportRefl x))) , sigmaPath→pathSigma _ _ (funExt₃ (λ x y z → isSetA _ _ _ _) , funExt₃ (λ x y z → isSetA _ _ _ _))))
+inv-inv-left isSetA f@(↑ , ↓ , ε , η) = inverse-equality-lemma (inv-inv f ∘ f) id-inv isSetA isSetA λ x → η x (↑ x) refl
 
 inv-inv-right : isSet B → (f : Inverse A B) → f ∘ inv-inv f ≡ id-inv
-inv-inv-right isSetB (↑ , ↓ , ε , η) = sigmaPath→pathSigma _ _
-  ((funExt (λ x → ε _ _ refl)) , sigmaPath→pathSigma _ _ ((funExt (λ x → (transportRefl _) ∙ ε _ _ (cong ↓ (transportRefl x)))) , sigmaPath→pathSigma _ _ (funExt₃ (λ x y z → isSetB _ _ _ _) , funExt₃ (λ x y z → isSetB _ _ _ _))))
+inv-inv-right isSetB f@(↑ , ↓ , ε , η) = inverse-equality-lemma (f ∘ inv-inv f) id-inv isSetB isSetB λ x → ε x (↓ x) refl
