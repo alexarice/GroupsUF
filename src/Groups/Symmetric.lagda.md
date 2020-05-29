@@ -1,3 +1,8 @@
+# Groups.Symmetric
+
+In this file we show that given a set X, we can form a group, using the spec
+
+```agda
 {-# OPTIONS --safe --cubical #-}
 
 module Groups.Symmetric where
@@ -22,3 +27,4 @@ Symmetric-Group X isSetX =
   id-inv , (λ f → (id-unit-left f) , (id-unit-right f)) ,
   -- Inverses
   (λ f → (inv-inv f) , ((inv-inv-right isSetX f) , inv-inv-left isSetX f))
+```

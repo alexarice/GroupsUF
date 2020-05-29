@@ -1,3 +1,7 @@
+# Groups.Symmetric.Inclusion
+
+We show that there is an inclusion from any group into into the Symmetric group of its underlying set.
+```agda
 {-# OPTIONS --safe --cubical #-}
 
 open import Cubical.Structures.Group
@@ -14,7 +18,10 @@ open group-·syntax 𝓖
 
 SymGroup : Group
 SymGroup = Symmetric-Group ⟨ 𝓖 ⟩ (group-is-set 𝓖)
+```
 
+The inclusion takes `g` to the function `λ x → g · x` with inverse `λ x → g ⁻¹ · x`
+```agda
 inc : ⟨ 𝓖 ⟩ → ⟨ SymGroup ⟩
 inc g = (λ x → g · x) , (λ x → g ⁻¹ · x) , i , ii
   where
@@ -33,7 +40,13 @@ inc g = (λ x → g · x) , (λ x → g ⁻¹ · x) , i , ii
       (g ⁻¹ · g) · a ≡⟨ cong (_· a) (group-linv 𝓖 g) ⟩
       ₁ · a          ≡⟨ group-lid 𝓖 a ⟩
       a ∎
+```
 
+## Inclusion properties
+
+The inclusion can be shown to be injective and a group homomorphism.
+
+```agda
 inc-injective : (x y : ⟨ 𝓖 ⟩) → inc x ≡ inc y → x ≡ y
 inc-injective x y p =
   x ≡⟨ sym (group-rid 𝓖 x) ⟩
@@ -41,23 +54,6 @@ inc-injective x y p =
   y · ₁ ≡⟨ group-rid 𝓖 y ⟩
   y ∎
 
-inv-involution : ∀ (g h : ⟨ 𝓖 ⟩) → (g · h) ⁻¹ ≡ h ⁻¹ · g ⁻¹
-inv-involution g h =
-  (g · h) ⁻¹ ≡⟨ sym (group-rid 𝓖 ((g · h) ⁻¹)) ⟩
-  (g · h) ⁻¹ · ₁ ≡⟨ cong ((g · h) ⁻¹ ·_) i ⟩
-  (g · h) ⁻¹ · ((g · h) · (h ⁻¹ · g ⁻¹)) ≡⟨ group-assoc 𝓖 ((g · h) ⁻¹) (g · h) (h ⁻¹ · g ⁻¹) ⟩
-  ((g · h) ⁻¹ · (g · h)) · (h ⁻¹ · g ⁻¹) ≡⟨ cong (_· (h ⁻¹ · g ⁻¹)) (group-linv 𝓖 (g · h)) ⟩
-  ₁ · (h ⁻¹ · g ⁻¹) ≡⟨ group-lid 𝓖 (h ⁻¹ · g ⁻¹) ⟩
-  h ⁻¹ · g ⁻¹ ∎
-    where
-      i : ₁ ≡ (g · h) · h ⁻¹ · g ⁻¹
-      i =
-        ₁ ≡⟨ sym (group-rinv 𝓖 g) ⟩
-        g · g ⁻¹ ≡⟨ cong (_· g ⁻¹) (sym (group-rid 𝓖 g)) ⟩
-        (g · ₁) · g ⁻¹ ≡⟨ cong (λ a → (g · a) · g ⁻¹) (sym (group-rinv 𝓖 h)) ⟩
-        (g · (h · h ⁻¹)) · g ⁻¹ ≡⟨ cong (_· g ⁻¹) (group-assoc 𝓖 g h (h ⁻¹)) ⟩
-        ((g · h) · h ⁻¹) · g ⁻¹ ≡⟨ sym (group-assoc 𝓖 (g · h) (h ⁻¹) (g ⁻¹)) ⟩
-        (g · h) · h ⁻¹ · g ⁻¹ ∎
-
 inc-homo : (x y : ⟨ 𝓖 ⟩) → inc (x · y) ≡ group-operation (SymGroup) (inc x) (inc y)
 inc-homo x y = inverse-equality-lemma _ _ (group-is-set 𝓖) (group-is-set 𝓖) λ g → sym (group-assoc 𝓖 x y g)
+```

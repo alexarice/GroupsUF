@@ -1,3 +1,8 @@
+# Groups.Properties.Test
+
+This file demonstrates how to use the equality between `𝓖` and `RSymGroup 𝓖` to make proofs simpler.
+
+```agda
 {-# OPTIONS --safe --cubical #-}
 
 module Groups.Properties.Test where
@@ -9,10 +14,18 @@ open import Groups.Symmetric.Representable
 private
   variable
     ℓ ℓ′ : Level
+```
 
+We first define a function that allows us to prove a property for a group `𝓖` by instead proving it for the strictly associative and unital group `RSymGroup 𝓖`.
+
+```agda
 strictify : (𝓖 : Group) → (P : Group {ℓ} → Type ℓ′) → P (RSymGroup 𝓖) → P 𝓖
 strictify 𝓖 P p = transport (sym (cong P (inc≡ 𝓖))) p
+```
 
+The best way I have found to structure the proofs is to first list the properties we want to prove.
+
+```agda
 module _ {ℓ} (𝓖 : Group {ℓ}) where
 
   open group-·syntax 𝓖
@@ -34,7 +47,11 @@ module _ {ℓ} (𝓖 : Group {ℓ}) where
 
   InvUniqueLeft : Type ℓ
   InvUniqueLeft = ∀ g h → h · g ≡ ₁ → h ≡ g ⁻¹
+```
 
+And then we can easily prove these.
+
+```agda
 module _ {ℓ} (𝓖 : Group {ℓ}) where
 
   open group-·syntax 𝓖
@@ -85,3 +102,4 @@ module _ {ℓ} (𝓖 : Group {ℓ}) where
       h             ≡⟨ cong (h ∘_) (sym (group-rinv (RSymGroup 𝓖) g)) ⟩
       h ∘ g ∘ inv g ≡⟨ cong (_∘ inv g) p ⟩
       inv g         ∎
+```
