@@ -1,5 +1,3 @@
-# Groups.Symmetric.Representable
-
 This file defines the notion of a representable element of the symmetric group. Representable elements should (and do) correspond to elements of the symmetric group in the image of the inclusion `⟨ 𝓖 ⟩ → SymGroup ⟨ 𝓖 ⟩`. However they must be defined in a different way to preserve the strict associativity and unitality.
 
 <details>

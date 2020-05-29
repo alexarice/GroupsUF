@@ -1,7 +1,7 @@
-# Groups.Symmetric
+In this file we show that given a set X, we can form a group, using the special definition of permutation from `Groups.Function.Inverse` which is strictly associative and unital.
 
-In this file we show that given a set X, we can form a group, using the spec
-
+<details>
+<summary>Module header</summary>
 ```agda
 {-# OPTIONS --safe --cubical #-}
 
@@ -14,7 +14,10 @@ open import Groups.Function.Inverse
 private
   variable
     ℓ ℓ′ : Level
+```
+</details>
 
+```agda
 Symmetric-Group : (X : Type ℓ) → isSet X → Group
 Symmetric-Group X isSetX =
   -- Carrier

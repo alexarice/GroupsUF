@@ -1,7 +1,7 @@
-# Function.Inverse
-
 This file defines invertible functions in a way that makes them strictly associative and unital
 
+<details>
+<summary>Module header</summary>
 ```agda
 {-# OPTIONS --cubical --safe #-}
 
@@ -22,6 +22,7 @@ private
     C : Type ℓ″
     D : Type ℓ‴
 ```
+</details>
 
 The definition is given as an iterated Sigma type to make various proofs easier.
 

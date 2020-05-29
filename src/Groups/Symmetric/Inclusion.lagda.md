@@ -1,6 +1,7 @@
-# Groups.Symmetric.Inclusion
-
 We show that there is an inclusion from any group into into the Symmetric group of its underlying set.
+
+<details>
+<summary>Module header</summary>
 ```agda
 {-# OPTIONS --safe --cubical #-}
 
@@ -15,7 +16,10 @@ open import Groups.Function.Inverse
 open import Groups.Symmetric
 
 open group-·syntax 𝓖
+```
+</details>
 
+```agda
 SymGroup : Group
 SymGroup = Symmetric-Group ⟨ 𝓖 ⟩ (group-is-set 𝓖)
 ```
