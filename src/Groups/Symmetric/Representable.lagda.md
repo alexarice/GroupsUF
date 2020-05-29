@@ -2,6 +2,7 @@ This file defines the notion of a representable element of the symmetric group. 
 
 <details>
 <summary>Module header</summary>
+
 ```agda
 {-# OPTIONS --safe --cubical #-}
 
@@ -24,6 +25,7 @@ open import Groups.Symmetric.Inclusion 𝓖
 open group-·syntax 𝓖
 open group-operation-syntax
 ```
+
 </details>
 
 We define `Representable` as follows. A similar trick to the one used for inverses is used to ensure strict associativity and unitality is maintained. Without this trick the definition says that a function `f` is representable if `f (g · h) ≡ f g · h` for all `g h ∈ ⟨ 𝓖 ⟩`.

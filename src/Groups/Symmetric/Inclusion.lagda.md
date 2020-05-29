@@ -2,6 +2,7 @@ We show that there is an inclusion from any group into into the Symmetric group 
 
 <details>
 <summary>Module header</summary>
+
 ```agda
 {-# OPTIONS --safe --cubical #-}
 
@@ -17,6 +18,7 @@ open import Groups.Symmetric
 
 open group-·syntax 𝓖
 ```
+
 </details>
 
 ```agda

@@ -2,6 +2,7 @@ This file demonstrates how to use the equality between `𝓖` and `RSymGroup �
 
 <details>
 <summary>Module header</summary>
+
 ```agda
 {-# OPTIONS --safe --cubical #-}
 
@@ -15,6 +16,7 @@ private
   variable
     ℓ ℓ′ : Level
 ```
+
 </details>
 
 We first define a function that allows us to prove a property for a group `𝓖` by instead proving it for the strictly associative and unital group `RSymGroup 𝓖`.

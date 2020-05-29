@@ -2,6 +2,7 @@ In this file we show that given a set X, we can form a group, using the special 
 
 <details>
 <summary>Module header</summary>
+
 ```agda
 {-# OPTIONS --safe --cubical #-}
 
@@ -15,6 +16,7 @@ private
   variable
     ℓ ℓ′ : Level
 ```
+
 </details>
 
 ```agda
