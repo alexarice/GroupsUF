@@ -5,7 +5,7 @@ This file defines invertible functions in a way that makes them strictly associa
 ```agda
 {-# OPTIONS --cubical --safe #-}
 
-module Function.Inverse where
+module Groups.Function.Inverse where
 
 open import Cubical.Core.Primitives
 open import Cubical.Data.Nat

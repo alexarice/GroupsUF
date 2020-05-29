@@ -2,6 +2,8 @@
 
 This file defines the notion of a representable element of the symmetric group. Representable elements should (and do) correspond to elements of the symmetric group in the image of the inclusion `⟨ 𝓖 ⟩ → SymGroup ⟨ 𝓖 ⟩`. However they must be defined in a different way to preserve the strict associativity and unitality.
 
+<details>
+<summary>Module header</summary>
 ```agda
 {-# OPTIONS --safe --cubical #-}
 
@@ -17,13 +19,14 @@ open import Cubical.Foundations.Isomorphism
 open import Cubical.Foundations.Prelude
 open import Cubical.Foundations.SIP
 open import Cubical.Functions.FunExtEquiv
-open import Function.Inverse
+open import Groups.Function.Inverse
 open import Groups.Symmetric
 open import Groups.Symmetric.Inclusion 𝓖
 
 open group-·syntax 𝓖
 open group-operation-syntax
 ```
+</details>
 
 We define `Representable` as follows. A similar trick to the one used for inverses is used to ensure strict associativity and unitality is maintained. Without this trick the definition says that a function `f` is representable if `f (g · h) ≡ f g · h` for all `g h ∈ ⟨ 𝓖 ⟩`.
 
@@ -53,6 +56,7 @@ As `Representable f` is a prop we can prove that `Repr` are equal if the underly
 repr-equality : (f g : Repr) → fst f ≡ fst g → f ≡ g
 repr-equality (f , fr) (g , gr) p = ΣPathP (p , (isProp→PathP (λ i → rep-prop (p i)) fr gr))
 ```
+
 ## Group properties
 
 Representable elements are closed under group operations

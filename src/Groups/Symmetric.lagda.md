@@ -9,7 +9,7 @@ module Groups.Symmetric where
 
 open import Cubical.Foundations.Prelude
 open import Cubical.Structures.Group
-open import Function.Inverse
+open import Groups.Function.Inverse
 
 private
   variable
