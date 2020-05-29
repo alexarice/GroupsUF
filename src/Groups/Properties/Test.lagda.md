@@ -52,7 +52,7 @@ module _ {ℓ} (𝓖 : Group {ℓ}) where
   InvUniqueLeft = ∀ g h → h · g ≡ ₁ → h ≡ g ⁻¹
 ```
 
-And then we can easily prove these.
+We can then we can easily prove these using `strictify`.
 
 ```agda
 module _ {ℓ} (𝓖 : Group {ℓ}) where
@@ -80,17 +80,22 @@ module _ {ℓ} (𝓖 : Group {ℓ}) where
   inv-of-comp : InvOfComp 𝓖
   inv-of-comp = strictify 𝓖 InvOfComp
     λ g h →
-      inv (g ∘ h)                         ≡⟨ cong (inv (g ∘ h) ∘_) (sym (group-rinv (RSymGroup 𝓖) g)) ⟩
-      inv (g ∘ h) ∘ g ∘ inv g             ≡⟨ cong (λ a → inv (g ∘ h) ∘ g ∘ a ∘ inv g) (sym (group-rinv (RSymGroup 𝓖) h)) ⟩
-      inv (g ∘ h) ∘ g ∘ h ∘ inv h ∘ inv g ≡⟨ cong (_∘ (inv h ∘ inv g)) (group-linv (RSymGroup 𝓖) (g ∘ h)) ⟩
-      inv h ∘ inv g                       ∎
+      inv (g ∘ h)
+        ≡⟨ cong (inv (g ∘ h) ∘_) (sym (group-rinv (RSymGroup 𝓖) g)) ⟩
+      inv (g ∘ h) ∘ g ∘ inv g
+        ≡⟨ cong (λ a → inv (g ∘ h) ∘ g ∘ a ∘ inv g) (sym (group-rinv (RSymGroup 𝓖) h)) ⟩
+      inv (g ∘ h) ∘ g ∘ h ∘ inv h ∘ inv g
+        ≡⟨ cong (_∘ (inv h ∘ inv g)) (group-linv (RSymGroup 𝓖) (g ∘ h)) ⟩
+      inv h ∘ inv g ∎
 
   inv-involution : InvInvolution 𝓖
   inv-involution = strictify 𝓖 InvInvolution
     λ g →
-      inv (inv g)             ≡⟨ cong (inv (inv g) ∘_) (sym (group-linv (RSymGroup 𝓖) g)) ⟩
-      inv (inv g) ∘ inv g ∘ g ≡⟨ cong (_∘ g) (group-linv (RSymGroup 𝓖) (inv g)) ⟩
-      g                       ∎
+      inv (inv g)
+        ≡⟨ cong (inv (inv g) ∘_) (sym (group-linv (RSymGroup 𝓖) g)) ⟩
+      inv (inv g) ∘ inv g ∘ g
+        ≡⟨ cong (_∘ g) (group-linv (RSymGroup 𝓖) (inv g)) ⟩
+      g ∎
 
   inv-unique-right : InvUniqueRight 𝓖
   inv-unique-right = strictify 𝓖 InvUniqueRight

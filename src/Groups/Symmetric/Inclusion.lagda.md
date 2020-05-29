@@ -27,6 +27,7 @@ SymGroup = Symmetric-Group ⟨ 𝓖 ⟩ (group-is-set 𝓖)
 ```
 
 The inclusion takes `g` to the function `λ x → g · x` with inverse `λ x → g ⁻¹ · x`
+
 ```agda
 inc : ⟨ 𝓖 ⟩ → ⟨ SymGroup ⟩
 inc g = (λ x → g · x) , (λ x → g ⁻¹ · x) , i , ii
@@ -55,11 +56,12 @@ The inclusion can be shown to be injective and a group homomorphism.
 ```agda
 inc-injective : (x y : ⟨ 𝓖 ⟩) → inc x ≡ inc y → x ≡ y
 inc-injective x y p =
-  x ≡⟨ sym (group-rid 𝓖 x) ⟩
+  x     ≡⟨ sym (group-rid 𝓖 x) ⟩
   x · ₁ ≡⟨ cong (λ a → fst a ₁) p ⟩
   y · ₁ ≡⟨ group-rid 𝓖 y ⟩
   y ∎
 
 inc-homo : (x y : ⟨ 𝓖 ⟩) → inc (x · y) ≡ group-operation (SymGroup) (inc x) (inc y)
-inc-homo x y = inverse-equality-lemma _ _ (group-is-set 𝓖) (group-is-set 𝓖) λ g → sym (group-assoc 𝓖 x y g)
+inc-homo x y = inverse-equality-lemma _ _ (group-is-set 𝓖) (group-is-set 𝓖)
+                                      λ g → sym (group-assoc 𝓖 x y g)
 ```
