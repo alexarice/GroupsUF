@@ -59,55 +59,50 @@ module _ {ℓ} (𝓖 : Group {ℓ}) where
 
   open group-·syntax 𝓖
   open group-operation-syntax
-  open group-·syntax (RSymGroup 𝓖) renaming (_·_ to _∘_; ₁ to e; _⁻¹ to inv)
+  open import Groups.Reasoning 𝓖
 
   cancelᵣ : Cancellativeᵣ 𝓖
   cancelᵣ = strictify 𝓖 Cancellativeᵣ
-    λ g h z p →
-      g             ≡⟨ cong (g ∘_) (sym (group-rinv (RSymGroup 𝓖) z)) ⟩
-      g ∘ z ∘ inv z ≡⟨ cong (_∘ inv z) p ⟩
-      h ∘ z ∘ inv z ≡⟨ cong (h ∘_) (group-rinv (RSymGroup 𝓖) z) ⟩
-      h             ∎
+    λ g h z p → begin
+      g ∘⌊⌋            ≈˘⌊ rinv z ⌋
+      ⌊ g ∘ z ⌋∘ inv z ≈⌊  p      ⌋
+      h ∘⌊ z ∘ inv z ⌋ ≈⌊  rinv z ⌋
+      h                ∎′
 
   cancelₗ : Cancellativeₗ 𝓖
   cancelₗ = strictify 𝓖 Cancellativeₗ
-   λ g h z p →
-     g             ≡⟨ cong (_∘ g) (sym (group-linv (RSymGroup 𝓖) z)) ⟩
-     inv z ∘ z ∘ g ≡⟨ cong (inv z ∘_) p ⟩
-     inv z ∘ z ∘ h ≡⟨ cong (_∘ h) (group-linv (RSymGroup 𝓖) z) ⟩
-     h ∎
+   λ g h z p → begin
+     ⌊⌋∘ g            ≈˘⌊ linv z ⌋
+     inv z ∘⌊ z ∘ g ⌋ ≈⌊  p      ⌋
+     ⌊ inv z ∘ z ⌋∘ h ≈⌊  linv z ⌋
+     h                ∎′
 
   inv-of-comp : InvOfComp 𝓖
   inv-of-comp = strictify 𝓖 InvOfComp
-    λ g h →
-      inv (g ∘ h)
-        ≡⟨ cong (inv (g ∘ h) ∘_) (sym (group-rinv (RSymGroup 𝓖) g)) ⟩
-      inv (g ∘ h) ∘ g ∘ inv g
-        ≡⟨ cong (λ a → inv (g ∘ h) ∘ g ∘ a ∘ inv g) (sym (group-rinv (RSymGroup 𝓖) h)) ⟩
-      inv (g ∘ h) ∘ g ∘ h ∘ inv h ∘ inv g
-        ≡⟨ cong (_∘ (inv h ∘ inv g)) (group-linv (RSymGroup 𝓖) (g ∘ h)) ⟩
-      inv h ∘ inv g ∎
+    λ g h → begin
+      inv (g ∘ h) ∘⌊⌋                        ≈˘⌊ rinv g       ⌋
+      inv (g ∘ h) ∘ g ∘⌊⌋∘ inv g             ≈˘⌊ rinv h       ⌋
+      ⌊ inv (g ∘ h) ∘ g ∘ h ⌋∘ inv h ∘ inv g ≈⌊  linv (g ∘ h) ⌋
+      inv h ∘ inv g                          ∎′
 
   inv-involution : InvInvolution 𝓖
   inv-involution = strictify 𝓖 InvInvolution
-    λ g →
-      inv (inv g)
-        ≡⟨ cong (inv (inv g) ∘_) (sym (group-linv (RSymGroup 𝓖) g)) ⟩
-      inv (inv g) ∘ inv g ∘ g
-        ≡⟨ cong (_∘ g) (group-linv (RSymGroup 𝓖) (inv g)) ⟩
-      g ∎
+    λ g → begin
+      inv (inv g) ∘⌊⌋            ≈˘⌊ linv g       ⌋
+      ⌊ inv (inv g) ∘ inv g ⌋∘ g ≈⌊  linv (inv g) ⌋
+      g                          ∎′
 
   inv-unique-right : InvUniqueRight 𝓖
   inv-unique-right = strictify 𝓖 InvUniqueRight
-    λ g h p →
-      h             ≡⟨ cong (_∘ h) (sym (group-linv (RSymGroup 𝓖) g)) ⟩
-      inv g ∘ g ∘ h ≡⟨ cong (inv g ∘_) p ⟩
-      inv g         ∎
+    λ g h p → begin
+      ⌊⌋∘ h            ≈˘⌊ linv g ⌋
+      inv g ∘⌊ g ∘ h ⌋ ≈⌊  p      ⌋
+      inv g            ∎′
 
   inv-unique-left : InvUniqueLeft 𝓖
   inv-unique-left = strictify 𝓖 InvUniqueLeft
-    λ g h p →
-      h             ≡⟨ cong (h ∘_) (sym (group-rinv (RSymGroup 𝓖) g)) ⟩
-      h ∘ g ∘ inv g ≡⟨ cong (_∘ inv g) p ⟩
-      inv g         ∎
+    λ g h p → begin
+      h ∘⌊⌋            ≈˘⌊ rinv g ⌋
+      ⌊ h ∘ g ⌋∘ inv g ≈⌊  p      ⌋
+      inv g            ∎′
 ```
