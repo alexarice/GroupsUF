@@ -9,7 +9,7 @@ In this file we show that given a set X, we can form a group, using the special 
 module Groups.Symmetric where
 
 open import Cubical.Foundations.Prelude
-open import Cubical.Structures.Group
+open import Cubical.Algebra.Group
 open import Groups.Function.Inverse
 
 private
@@ -21,15 +21,18 @@ private
 
 ```agda
 Symmetric-Group : (X : Type ℓ) → isSet X → Group
-Symmetric-Group X isSetX =
-  -- Carrier
-  Inverse X X ,
+Symmetric-Group X isSetX = makeGroup
+  -- Id
+  id-inv
   -- Operation
-  _∘_ ,
-  -- Semigroup axioms
-  (isSetInv isSetX isSetX , inv-comp-assoc) ,
-  -- Unit
-  id-inv , (λ f → (id-unit-left f) , (id-unit-right f)) ,
-  -- Inverses
-  (λ f → (inv-inv f) , ((inv-inv-right isSetX f) , inv-inv-left isSetX f))
+  _∘_
+  -- Inverse
+  inv-inv
+  -- Group Axioms
+  (isSetInv isSetX isSetX)
+  inv-comp-assoc
+  id-unit-left
+  id-unit-left
+  (inv-inv-right isSetX)
+  (inv-inv-left isSetX)
 ```

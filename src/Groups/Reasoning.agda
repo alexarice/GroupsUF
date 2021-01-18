@@ -1,17 +1,18 @@
 {-# OPTIONS --safe --cubical --postfix-projections #-}
 
-open import Cubical.Structures.Group
+open import Cubical.Algebra.Group
 
 module Groups.Reasoning {ℓ} (𝓖 : Group {ℓ}) where
 
 open import Cubical.Foundations.Prelude
 open import Groups.Symmetric.Representable
+open import Cubical.Foundations.Structure
 
 private
   variable
     ℓ′ : Level
 
-open group-·syntax (RSymGroup 𝓖) renaming (_·_ to _∘_; ₁ to e; _⁻¹ to inv) public
+open GroupStr (RSymGroup 𝓖 .snd) using () renaming (_+_ to _∘_; 0g to e; -_ to inv; invr to rinv; invl to linv)  public
 
 record Expr : Type ℓ where
   field
@@ -27,7 +28,7 @@ open Expr
 _∼_ : (x : ⟨ RSymGroup 𝓖 ⟩) → (y : Expr) → Type ℓ
 x ∼ y = x ≡ eval y
 
-infix 15 _∘⌊_⌋∘_ ⌊_⌋ _∘⌊_⌋ ⌊_⌋∘_ _∘⌊⌋∘_ ⌊⌋ _∘⌊⌋ ⌊⌋∘_
+infix 6 _∘⌊_⌋∘_ ⌊_⌋ _∘⌊_⌋ ⌊_⌋∘_ _∘⌊⌋∘_ ⌊⌋ _∘⌊⌋ ⌊⌋∘_
 infix 3 _∎′
 
 _∘⌊_⌋∘_ : ⟨ RSymGroup 𝓖 ⟩ → ⟨ RSymGroup 𝓖 ⟩ → ⟨ RSymGroup 𝓖 ⟩ → Expr
@@ -97,9 +98,3 @@ syntax step-cong-≈ x rest p = x ≈⌊ p ⌋ rest
 
 infixr 2 step-cong-≈˘
 syntax step-cong-≈˘ x rest p = x ≈˘⌊ p ⌋ rest
-
-rinv : ∀ x → x ∘ inv x ≡ e
-rinv = group-rinv (RSymGroup 𝓖)
-
-linv : ∀ y → inv y ∘ y ≡ e
-linv = group-linv (RSymGroup 𝓖)

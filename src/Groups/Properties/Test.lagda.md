@@ -9,7 +9,7 @@ This file demonstrates how to use the equality between `𝓖` and `RSymGroup �
 module Groups.Properties.Test where
 
 open import Cubical.Foundations.Prelude
-open import Cubical.Structures.Group
+open import Cubical.Algebra.Group
 open import Groups.Symmetric.Representable
 
 private
@@ -31,34 +31,31 @@ The best way I have found to structure the proofs is to first list the propertie
 ```agda
 module _ {ℓ} (𝓖 : Group {ℓ}) where
 
-  open group-·syntax 𝓖
+  open GroupStr (𝓖 .snd)
 
   Cancellativeᵣ : Type ℓ
-  Cancellativeᵣ = ∀ g h z → g · z ≡ h · z → g ≡ h
+  Cancellativeᵣ = ∀ g h z → g + z ≡ h + z → g ≡ h
 
   Cancellativeₗ : Type ℓ
-  Cancellativeₗ = ∀ g h z → z · g ≡ z · h → g ≡ h
+  Cancellativeₗ = ∀ g h z → z + g ≡ z + h → g ≡ h
 
   InvOfComp : Type ℓ
-  InvOfComp = ∀ g h → (g · h) ⁻¹ ≡ h ⁻¹ · g ⁻¹
+  InvOfComp = ∀ g h → - (g + h) ≡ - h + - g
 
   InvInvolution : Type ℓ
-  InvInvolution = ∀ g → g ⁻¹ ⁻¹ ≡ g
+  InvInvolution = ∀ g → - - g ≡ g
 
   InvUniqueRight : Type ℓ
-  InvUniqueRight = ∀ g h → g · h ≡ ₁ → h ≡ g ⁻¹
+  InvUniqueRight = ∀ g h → g + h ≡ 0g → h ≡ - g
 
   InvUniqueLeft : Type ℓ
-  InvUniqueLeft = ∀ g h → h · g ≡ ₁ → h ≡ g ⁻¹
+  InvUniqueLeft = ∀ g h → h + g ≡ 0g → h ≡ - g
 ```
 
 We can then we can easily prove these using `strictify`.
 
 ```agda
 module _ {ℓ} (𝓖 : Group {ℓ}) where
-
-  open group-·syntax 𝓖
-  open group-operation-syntax
   open import Groups.Reasoning 𝓖
 
   cancelᵣ : Cancellativeᵣ 𝓖
