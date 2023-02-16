@@ -8,7 +8,7 @@ This file defines the notion of a representable element of the symmetric group. 
 
 open import Cubical.Algebra.Group
 
-module Groups.Symmetric.Representable {ℓ} (𝓖 : Group {ℓ}) where
+module Groups.Symmetric.Representable {ℓ} (𝓖 : Group ℓ) where
 
 open import Cubical.Data.Sigma
 open import Cubical.Data.Vec
@@ -22,9 +22,9 @@ open import Groups.Function.Inverse
 open import Groups.Symmetric
 open import Groups.Symmetric.Inclusion 𝓖
 
-open GroupStr (𝓖 .snd) using (_+_;0g;-_)
-open GroupStr (SymGroup .snd) using () renaming (_+_ to _·_; 0g to 0gs; -_ to _⁻¹)
-open GroupStr hiding (_+_;0g;-_)
+open GroupStr (𝓖 .snd) using (_·_;1g;inv)
+open GroupStr (SymGroup .snd) using () renaming (_·_ to _·′_; 1g to 1gs; inv to _⁻¹)
+open GroupStr hiding (_·_;1g;inv)
 ```
 
 </details>
@@ -33,7 +33,7 @@ We define `Representable` as follows. A similar trick to the one used for invers
 
 ```agda
 Representable : ⟨ SymGroup ⟩ → Type ℓ
-Representable f = ∀ x g h → x ≡ g + h → fst f x ≡ fst f g + h
+Representable f = ∀ x g h → x ≡ g · h → fst f x ≡ fst f g · h
 
 Repr : Type ℓ
 Repr = Σ[ f ∈ ⟨ SymGroup ⟩ ] Representable f
@@ -46,7 +46,7 @@ Repr = Σ[ f ∈ ⟨ SymGroup ⟩ ] Representable f
 ```agda
 rep-prop : (f : ⟨ SymGroup ⟩) → isProp (Representable f)
 rep-prop f = isPropΠ2 (λ x y →
-             isPropΠ2 λ w z → (isSetGroup 𝓖 (fst f x) (fst f y + w)))
+             isPropΠ2 λ w z → (isSetGroup 𝓖 (fst f x) (fst f y · w)))
 
 repΣ-set : isSet Repr
 repΣ-set = isSetΣ (isSetGroup SymGroup) λ f → isProp→isSet (rep-prop f)
@@ -66,19 +66,19 @@ Representable elements are closed under group operations
 
 ```agda
 rep-comp : ∀ (f f′ : Repr) → Repr
-rep-comp (f , rf) (f′ , rf′) = f · f′ ,
+rep-comp (f , rf) (f′ , rf′) = f ·′ f′ ,
                                λ x g h p → rf (fst f′ x) (fst f′ g) h (rf′ x g h p)
 
 rep-id : Repr
-rep-id = 0gs , λ x g h p → p
+rep-id = 1gs , λ x g h p → p
 
 rep-inv : (f : Repr) → Repr
 rep-inv (a@(f , finv , ε , η) , rf) = a ⁻¹ ,
-  λ x g h p → η (finv g + h) x
+  λ x g h p → η (finv g · h) x
    (x              ≡⟨ p ⟩
-    g + h          ≡⟨ cong (_+ h) (sym (ε g (finv g) refl)) ⟩
-    f (finv g) + h ≡⟨ sym (rf (finv g + h) (finv g) h refl) ⟩
-    f (finv g + h) ∎)
+    g · h          ≡⟨ cong (_· h) (sym (ε g (finv g) refl)) ⟩
+    f (finv g) · h ≡⟨ sym (rf (finv g · h) (finv g) h refl) ⟩
+    f (finv g · h) ∎)
 ```
 
 Associativity and Unitality still hold by definition
@@ -109,7 +109,7 @@ rep-inv-right f = repr-equality (rep-comp f (rep-inv f)) rep-id
 and hence representable elements of the symmetric group themselves form a group.
 
 ```agda
-RSymGroup : Group {ℓ}
+RSymGroup : Group ℓ
 RSymGroup = makeGroup
   rep-id
   rep-comp
@@ -121,7 +121,7 @@ RSymGroup = makeGroup
   rep-inv-right
   rep-inv-left
 
-open GroupStr (RSymGroup .snd) using () renaming (_+_ to _*_)
+open GroupStr (RSymGroup .snd) using () renaming (_·_ to _*_; 1g to 1gr; inv to invᵣ)
 ```
 
 ## Isomorphism
@@ -133,16 +133,16 @@ We first have that every included element is representable.
 ```agda
 inc-rep : ∀ (a : ⟨ 𝓖 ⟩) → Representable (inc a)
 inc-rep a x g h p =
-  a + x ≡⟨ cong (a +_) p ⟩
-  a + (g + h) ≡⟨ assoc (𝓖 .snd) a g h ⟩
-  (a + g) + h ∎
+  a · x ≡⟨ cong (a ·_) p ⟩
+  a · (g · h) ≡⟨ assoc (𝓖 .snd) a g h ⟩
+  (a · g) · h ∎
 ```
 and that any representable element is the image of an included element
 ```agda
 rep-inc : ∀ (f : Repr) → Σ[ g ∈ ⟨ 𝓖 ⟩ ] inc g ≡ fst f
-rep-inc (a@(f , rest) , rf) = (f 0g) ,
-  inverse-equality-lemma (inc (f 0g)) a (isSetGroup 𝓖) (isSetGroup 𝓖)
-                         λ x → sym (rf x 0g x (sym (lid (𝓖 .snd) x)))
+rep-inc (a@(f , rest) , rf) = (f 1g) ,
+  inverse-equality-lemma (inc (f 1g)) a (isSetGroup 𝓖) (isSetGroup 𝓖)
+                         λ x → sym (rf x 1g x (sym (lid (𝓖 .snd) x)))
 ```
 
 This allows us to define `incᵣ`
@@ -172,12 +172,18 @@ incᵣ-equiv = isoToEquiv incᵣ-iso
 Further it is also a group homomorphism.
 
 ```agda
-incᵣ-homo : ∀ g h → incᵣ (g + h) ≡ incᵣ g * incᵣ h
+incᵣ-homo : ∀ g h → incᵣ (g · h) ≡ incᵣ g * incᵣ h
 incᵣ-homo g h =
-  repr-equality (incᵣ (g + h)) (incᵣ g * incᵣ h) (inc-homo g h)
+  repr-equality (incᵣ (g · h)) (incᵣ g * incᵣ h) (inc-homo g h)
+
+incᵣ-pres1 : incᵣ-equiv .fst 1g ≡ 1gr
+incᵣ-pres1 = repr-equality (incᵣ-equiv .fst 1g) 1gr inc-pres1
+
+incᵣ-presinv : (x : ⟨ 𝓖 ⟩) → incᵣ-equiv .fst (GroupStr.inv (snd 𝓖) x) ≡ invᵣ (incᵣ-equiv .fst x)
+incᵣ-presinv x = repr-equality (incᵣ-equiv .fst (GroupStr.inv (snd 𝓖) x)) (invᵣ (incᵣ-equiv .fst x)) (inc-pres-inv x)
 
 incᵣ-group-iso : GroupEquiv 𝓖 RSymGroup
-incᵣ-group-iso = groupequiv incᵣ-equiv incᵣ-homo
+incᵣ-group-iso = incᵣ-equiv , record { pres· = incᵣ-homo ; pres1 = incᵣ-pres1 ; presinv = incᵣ-presinv }
 ```
 
 Using the structure identity principle, `⟨ 𝓖 ⟩` and `RSymgroup ⟨ 𝓖 ⟩` are actually equal.

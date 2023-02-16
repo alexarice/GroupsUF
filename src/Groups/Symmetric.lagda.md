@@ -20,7 +20,7 @@ private
 </details>
 
 ```agda
-Symmetric-Group : (X : Type ℓ) → isSet X → Group
+Symmetric-Group : (X : Type ℓ) → isSet X → Group ℓ
 Symmetric-Group X isSetX = makeGroup
   -- Id
   id-inv

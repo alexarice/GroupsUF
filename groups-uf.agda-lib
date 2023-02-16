@@ -1,3 +1,4 @@
 name: groups-uf
-include: src
+include: src .
 depend: cubical
+flags: --cubical --safe

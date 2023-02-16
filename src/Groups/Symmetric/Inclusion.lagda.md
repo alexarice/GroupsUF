@@ -8,7 +8,7 @@ We show that there is an inclusion from any group into into the Symmetric group 
 
 open import Cubical.Algebra.Group
 
-module Groups.Symmetric.Inclusion {ℓ} (𝓖 : Group {ℓ}) where
+module Groups.Symmetric.Inclusion {ℓ} (𝓖 : Group ℓ) where
 
 open import Cubical.Data.Sigma
 open import Cubical.Foundations.Prelude
@@ -23,7 +23,7 @@ open GroupStr (𝓖 .snd)
 </details>
 
 ```agda
-SymGroup : Group
+SymGroup : Group ℓ
 SymGroup = Symmetric-Group ⟨ 𝓖 ⟩ (isSetGroup 𝓖)
 ```
 
@@ -31,22 +31,22 @@ The inclusion takes `g` to the function `λ x → g · x` with inverse `λ x →
 
 ```agda
 inc : ⟨ 𝓖 ⟩ → ⟨ SymGroup ⟩
-inc g = (λ x → g + x) , (λ x → - g + x) , i , ii
+inc g = (λ x → g · x) , (λ x → inv g · x) , i , ii
   where
-    i : (b x : ⟨ 𝓖 ⟩) → x ≡ - g + b → g + x ≡ b
+    i : (b x : ⟨ 𝓖 ⟩) → x ≡ inv g · b → g · x ≡ b
     i b x p =
-      g + x          ≡⟨ cong (g +_) p ⟩
-      g + (- g + b) ≡⟨ assoc g (- g) b ⟩
-      (g + - g) + b ≡⟨ cong (_+ b) (invr g) ⟩
-      0g + b          ≡⟨ lid b ⟩
+      g · x          ≡⟨ cong (g ·_) p ⟩
+      g · (inv g · b) ≡⟨ assoc g (inv g) b ⟩
+      (g · inv g) · b ≡⟨ cong (_· b) (invr g) ⟩
+      1g · b          ≡⟨ lid b ⟩
       b ∎
 
-    ii : (a y : ⟨ 𝓖 ⟩) → y ≡ g + a → - g + y ≡ a
+    ii : (a y : ⟨ 𝓖 ⟩) → y ≡ g · a → inv g · y ≡ a
     ii a y p =
-      - g + y       ≡⟨ cong (- g +_) p ⟩
-      - g + (g + a) ≡⟨ assoc (- g) g a ⟩
-      (- g + g) + a ≡⟨ cong (_+ a) (invl g) ⟩
-      0g + a          ≡⟨ lid a ⟩
+      inv g · y       ≡⟨ cong (inv g ·_) p ⟩
+      inv g · (g · a) ≡⟨ assoc (inv g) g a ⟩
+      (inv g · g) · a ≡⟨ cong (_· a) (invl g) ⟩
+      1g · a          ≡⟨ lid a ⟩
       a ∎
 ```
 
@@ -58,12 +58,18 @@ The inclusion can be shown to be injective and a group homomorphism.
 inc-injective : (x y : ⟨ 𝓖 ⟩) → inc x ≡ inc y → x ≡ y
 inc-injective x y p =
   x     ≡⟨ sym (rid x) ⟩
-  x + 0g ≡⟨ cong (λ a → fst a 0g) p ⟩
-  y + 0g ≡⟨ rid y ⟩
+  x · 1g ≡⟨ cong (λ a → fst a 1g) p ⟩
+  y · 1g ≡⟨ rid y ⟩
   y ∎
 
-open GroupStr (SymGroup .snd) using () renaming (_+_ to _·_)
-inc-homo : (x y : ⟨ 𝓖 ⟩) → inc (x + y) ≡ (inc x) · (inc y)
+open GroupStr (SymGroup .snd) using () renaming (_·_ to _·′_; 1g to 1gs; inv to invs)
+inc-homo : (x y : ⟨ 𝓖 ⟩) → inc (x · y) ≡ (inc x) ·′ (inc y)
 inc-homo x y = inverse-equality-lemma _ _ (isSetGroup 𝓖) (isSetGroup 𝓖)
-                                      λ g → sym (assoc x y g)
+  λ g → sym (assoc x y g)
+
+inc-pres1 : inc 1g ≡ 1gs
+inc-pres1 = inverse-equality-lemma (inc 1g) 1gs (isSetGroup 𝓖) (isSetGroup 𝓖) lid
+
+inc-pres-inv : (g : ⟨ 𝓖 ⟩) → inc (inv g) ≡ invs (inc g)
+inc-pres-inv g = inverse-equality-lemma (inc (inv g)) (invs (inc g)) (isSetGroup 𝓖) (isSetGroup 𝓖) (λ x → refl)
 ```

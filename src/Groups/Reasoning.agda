@@ -2,7 +2,7 @@
 
 open import Cubical.Algebra.Group
 
-module Groups.Reasoning {ℓ} (𝓖 : Group {ℓ}) where
+module Groups.Reasoning {ℓ} (𝓖 : Group ℓ) where
 
 open import Cubical.Foundations.Prelude
 open import Groups.Symmetric.Representable
@@ -12,7 +12,7 @@ private
   variable
     ℓ′ : Level
 
-open GroupStr (RSymGroup 𝓖 .snd) using () renaming (_+_ to _∘_; 0g to e; -_ to inv; invr to rinv; invl to linv)  public
+open GroupStr (RSymGroup 𝓖 .snd) using () renaming (_·_ to _∘_; 1g to e; inv to _⁻¹; invr to rinv; invl to linv)  public
 
 record Expr : Type ℓ where
   field
@@ -98,3 +98,6 @@ syntax step-cong-≈ x rest p = x ≈⌊ p ⌋ rest
 
 infixr 2 step-cong-≈˘
 syntax step-cong-≈˘ x rest p = x ≈˘⌊ p ⌋ rest
+
+strictify : (P : Group ℓ → Type ℓ′) → P (RSymGroup 𝓖) → P 𝓖
+strictify P p = transport (sym (cong P (inc≡ 𝓖))) p

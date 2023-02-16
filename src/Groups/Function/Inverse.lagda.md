@@ -40,12 +40,6 @@ Inverse A B = Σ[ ↑ ∈ (A → B) ] Σ[ ↓ ∈ (B → A) ]
 We can show this is a set using standard functions from the Cubical library.
 
 ```agda
-isSetΠ3 : ∀ {A : Type ℓ} {B : A → Type ℓ′} {C : (a : A) → B a → Type ℓ″}
-            {D : (a : A) → (b : B a) → (c : C a b) → Type ℓ‴} →
-            ((a : A) → (b : B a) → (c : C a b) → isSet (D a b c)) →
-            isSet ((a : A) → (b : B a) → (c : C a b) → D a b c)
-isSetΠ3 h = isSetΠ2 (λ x y → isSetΠ (λ z → h x y z))
-
 isSetInv : isSet A → isSet B → isSet (Inverse A B)
 isSetInv isSetA isSetB =
   isSetΣ (isSetΠ λ x → isSetB) λ f →
