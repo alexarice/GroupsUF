@@ -12,7 +12,7 @@ private
   variable
     ℓ′ : Level
 
-open GroupStr (RSymGroup 𝓖 .snd) using () renaming (_·_ to _∘_; 1g to e; inv to _⁻¹; invr to rinv; invl to linv)  public
+open GroupStr (RSymGroup 𝓖 .snd) using () renaming (_·_ to _∘_; 1g to e; inv to _⁻¹; ·InvR to ·InvR′; ·InvL to ·InvL′)  public
 
 record Expr : Type ℓ where
   field

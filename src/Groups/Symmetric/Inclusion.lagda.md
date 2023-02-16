@@ -36,17 +36,17 @@ inc g = (λ x → g · x) , (λ x → inv g · x) , i , ii
     i : (b x : ⟨ 𝓖 ⟩) → x ≡ inv g · b → g · x ≡ b
     i b x p =
       g · x          ≡⟨ cong (g ·_) p ⟩
-      g · (inv g · b) ≡⟨ assoc g (inv g) b ⟩
-      (g · inv g) · b ≡⟨ cong (_· b) (invr g) ⟩
-      1g · b          ≡⟨ lid b ⟩
+      g · (inv g · b) ≡⟨ ·Assoc g (inv g) b ⟩
+      (g · inv g) · b ≡⟨ cong (_· b) (·InvR g) ⟩
+      1g · b          ≡⟨ ·IdL b ⟩
       b ∎
 
     ii : (a y : ⟨ 𝓖 ⟩) → y ≡ g · a → inv g · y ≡ a
     ii a y p =
       inv g · y       ≡⟨ cong (inv g ·_) p ⟩
-      inv g · (g · a) ≡⟨ assoc (inv g) g a ⟩
-      (inv g · g) · a ≡⟨ cong (_· a) (invl g) ⟩
-      1g · a          ≡⟨ lid a ⟩
+      inv g · (g · a) ≡⟨ ·Assoc (inv g) g a ⟩
+      (inv g · g) · a ≡⟨ cong (_· a) (·InvL g) ⟩
+      1g · a          ≡⟨ ·IdL a ⟩
       a ∎
 ```
 
@@ -57,18 +57,18 @@ The inclusion can be shown to be injective and a group homomorphism.
 ```agda
 inc-injective : (x y : ⟨ 𝓖 ⟩) → inc x ≡ inc y → x ≡ y
 inc-injective x y p =
-  x     ≡⟨ sym (rid x) ⟩
+  x     ≡⟨ sym (·IdR x) ⟩
   x · 1g ≡⟨ cong (λ a → fst a 1g) p ⟩
-  y · 1g ≡⟨ rid y ⟩
+  y · 1g ≡⟨ ·IdR y ⟩
   y ∎
 
 open GroupStr (SymGroup .snd) using () renaming (_·_ to _·′_; 1g to 1gs; inv to invs)
 inc-homo : (x y : ⟨ 𝓖 ⟩) → inc (x · y) ≡ (inc x) ·′ (inc y)
 inc-homo x y = inverse-equality-lemma _ _ (isSetGroup 𝓖) (isSetGroup 𝓖)
-  λ g → sym (assoc x y g)
+  λ g → sym (·Assoc x y g)
 
 inc-pres1 : inc 1g ≡ 1gs
-inc-pres1 = inverse-equality-lemma (inc 1g) 1gs (isSetGroup 𝓖) (isSetGroup 𝓖) lid
+inc-pres1 = inverse-equality-lemma (inc 1g) 1gs (isSetGroup 𝓖) (isSetGroup 𝓖) ·IdL
 
 inc-pres-inv : (g : ⟨ 𝓖 ⟩) → inc (inv g) ≡ invs (inc g)
 inc-pres-inv g = inverse-equality-lemma (inc (inv g)) (invs (inc g)) (isSetGroup 𝓖) (isSetGroup 𝓖) (λ x → refl)

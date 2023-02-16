@@ -54,45 +54,45 @@ module _ {ℓ} (𝓖 : Group ℓ) where
   cancelᵣ : Cancellativeᵣ 𝓖
   cancelᵣ = strictify Cancellativeᵣ
     λ g h z p → begin
-      g ∘⌊⌋            ≈˘⌊ rinv z ⌋
+      g ∘⌊⌋            ≈˘⌊ ·InvR′ z ⌋
       ⌊ g ∘ z ⌋∘ (z ⁻¹) ≈⌊  p      ⌋
-      h ∘⌊ z ∘ z ⁻¹ ⌋ ≈⌊  rinv z ⌋
+      h ∘⌊ z ∘ z ⁻¹ ⌋ ≈⌊  ·InvR′ z ⌋
       h                ∎′
 
   cancelₗ : Cancellativeₗ 𝓖
   cancelₗ = strictify Cancellativeₗ
    λ g h z p → begin
-     ⌊⌋∘ g            ≈˘⌊ linv z ⌋
+     ⌊⌋∘ g            ≈˘⌊ ·InvL′ z ⌋
      z ⁻¹ ∘⌊ z ∘ g ⌋ ≈⌊  p      ⌋
-     ⌊ z ⁻¹ ∘ z ⌋∘ h ≈⌊  linv z ⌋
+     ⌊ z ⁻¹ ∘ z ⌋∘ h ≈⌊  ·InvL′ z ⌋
      h                ∎′
 
   inv-of-comp : InvOfComp 𝓖
   inv-of-comp = strictify InvOfComp
     λ g h → begin
-      (g ∘ h) ⁻¹ ∘⌊⌋                        ≈˘⌊ rinv g       ⌋
-      (g ∘ h) ⁻¹ ∘ g ∘⌊⌋∘ g ⁻¹             ≈˘⌊ rinv h       ⌋
-      ⌊ (g ∘ h) ⁻¹ ∘ g ∘ h ⌋∘ h ⁻¹ ∘ g ⁻¹ ≈⌊  linv (g ∘ h) ⌋
+      (g ∘ h) ⁻¹ ∘⌊⌋                        ≈˘⌊ ·InvR′ g       ⌋
+      (g ∘ h) ⁻¹ ∘ g ∘⌊⌋∘ g ⁻¹             ≈˘⌊ ·InvR′ h       ⌋
+      ⌊ (g ∘ h) ⁻¹ ∘ g ∘ h ⌋∘ h ⁻¹ ∘ g ⁻¹ ≈⌊  ·InvL′ (g ∘ h) ⌋
       h ⁻¹ ∘ g ⁻¹                          ∎′
 
   inv-involution : InvInvolution 𝓖
   inv-involution = strictify InvInvolution
     λ g → begin
-      g ⁻¹ ⁻¹ ∘⌊⌋            ≈˘⌊ linv g       ⌋
-      ⌊ g ⁻¹ ⁻¹ ∘ g ⁻¹ ⌋∘ g ≈⌊  linv (g ⁻¹) ⌋
+      g ⁻¹ ⁻¹ ∘⌊⌋            ≈˘⌊ ·InvL′ g       ⌋
+      ⌊ g ⁻¹ ⁻¹ ∘ g ⁻¹ ⌋∘ g ≈⌊  ·InvL′ (g ⁻¹) ⌋
       g                          ∎′
 
   inv-unique-right : InvUniqueRight 𝓖
   inv-unique-right = strictify InvUniqueRight
     λ g h p → begin
-      ⌊⌋∘ h            ≈˘⌊ linv g ⌋
+      ⌊⌋∘ h            ≈˘⌊ ·InvL′ g ⌋
       g ⁻¹ ∘⌊ g ∘ h ⌋ ≈⌊  p      ⌋
       g ⁻¹            ∎′
 
   inv-unique-left : InvUniqueLeft 𝓖
   inv-unique-left = strictify InvUniqueLeft
     λ g h p → begin
-      h ∘⌊⌋            ≈˘⌊ rinv g ⌋
+      h ∘⌊⌋            ≈˘⌊ ·InvR′ g ⌋
       ⌊ h ∘ g ⌋∘ g ⁻¹ ≈⌊  p      ⌋
       g ⁻¹            ∎′
 ```

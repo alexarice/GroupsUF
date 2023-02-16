@@ -10,6 +10,8 @@ open import Cubical.Algebra.Group
 
 module Groups.Symmetric.Representable {ℓ} (𝓖 : Group ℓ) where
 
+open import Cubical.Algebra.Group.GroupPath
+open import Cubical.Algebra.Group.Morphisms
 open import Cubical.Data.Sigma
 open import Cubical.Data.Vec
 open import Cubical.Foundations.Equiv
@@ -99,11 +101,11 @@ We can prove the invertibility properties
 ```agda
 rep-inv-left : (f : Repr) → rep-comp (rep-inv f) f ≡ rep-id
 rep-inv-left f = repr-equality (rep-comp (rep-inv f) f) rep-id
-                               (invl (SymGroup .snd) (fst f))
+                               (·InvL (SymGroup .snd) (fst f))
 
 rep-inv-right : (f : Repr) → rep-comp f (rep-inv f) ≡ rep-id
 rep-inv-right f = repr-equality (rep-comp f (rep-inv f)) rep-id
-                                (invr (SymGroup .snd) (fst f))
+                                (·InvR (SymGroup .snd) (fst f))
 ```
 
 and hence representable elements of the symmetric group themselves form a group.
@@ -134,7 +136,7 @@ We first have that every included element is representable.
 inc-rep : ∀ (a : ⟨ 𝓖 ⟩) → Representable (inc a)
 inc-rep a x g h p =
   a · x ≡⟨ cong (a ·_) p ⟩
-  a · (g · h) ≡⟨ assoc (𝓖 .snd) a g h ⟩
+  a · (g · h) ≡⟨ ·Assoc (𝓖 .snd) a g h ⟩
   (a · g) · h ∎
 ```
 and that any representable element is the image of an included element
@@ -142,7 +144,7 @@ and that any representable element is the image of an included element
 rep-inc : ∀ (f : Repr) → Σ[ g ∈ ⟨ 𝓖 ⟩ ] inc g ≡ fst f
 rep-inc (a@(f , rest) , rf) = (f 1g) ,
   inverse-equality-lemma (inc (f 1g)) a (isSetGroup 𝓖) (isSetGroup 𝓖)
-                         λ x → sym (rf x 1g x (sym (lid (𝓖 .snd) x)))
+                         λ x → sym (rf x 1g x (sym (·IdL (𝓖 .snd) x)))
 ```
 
 This allows us to define `incᵣ`
