@@ -4,6 +4,8 @@
 % \usepackage{fancyvrb}
 \usepackage{amsthm}
 \usepackage{amsmath}
+\usepackage{microtype}
+\usepackage{hyperref}
 % \DefineVerbatimEnvironment{code}{Verbatim}{}
 
 \usepackage[utf8]{inputenc}
@@ -24,7 +26,7 @@
 \newunicodechar{⁻}{\ensuremath{\mathnormal{}^{-}}}
 \newunicodechar{¹}{\ensuremath{\mathnormal{}^{1}}}
 \newunicodechar{≈}{\ensuremath{\mathnormal\approx}}
-\newunicodechar{′}{\ensuremath{\mathnormal\prime}}
+\newunicodechar{′}{\ensuremath{\mathnormal{{}^\prime}}}
 
 \title{Strictly Associative Group Theory using Univalence}
 \author{Alex Rice}
@@ -35,7 +37,7 @@ Often when proving basic properties about groups, we end up proving equations us
 
 The usual approaches to these problems involve either putting up with the problem, using a variety of tactics to make the manipulations less painful, or having an array of helper lemmas. None of these methods mirror the approach used in traditional mathematics where it would be very rare to see a bracket written out in a proof.
 
-As an example consider this proof that proves that for \(x,y\) in some group \(G\) that \((x \cdot y)^{-1} = y^{-1} \cdot x^{-1}\):
+As an example consider this proof that proves that the inverse of any element in some group \(G\) is unique:
 
 \begin{code}[hide]
 module Abstract.Abstract where
@@ -47,45 +49,48 @@ open import Groups.Symmetric.Representable
 \end{code}
 
 \begin{code}
-module _ {ℓ} {𝓖 : Group ℓ} where
-  open GroupStr (snd 𝓖)
-  open GroupTheory 𝓖
+InvUniqueLeft : ∀ {ℓ} (𝓖 : Group ℓ) → Type ℓ
+InvUniqueLeft 𝓖 = ∀ g h → h · g ≡ 1g → h ≡ inv g
+  where
+    open GroupStr (𝓖 .snd)
 
-  lemma : (x y : ⟨ 𝓖 ⟩) → (inv (x · y)) ≡ (inv y · inv x)
-  lemma x y = ·CancelL (x · y) ((x · y) · inv (x · y)
-     ≡⟨ invr (x · y) ⟩
-    1g
-     ≡⟨ sym (invr x) ⟩
-    (x · inv x)
-     ≡⟨ cong (_· inv x) (sym (rid x)) ⟩
-    ((x · 1g) · inv x)
-     ≡⟨ cong (λ - → (x · -) · inv x) (sym (invr y)) ⟩
-    ((x · (y · inv y)) · inv x)
-     ≡⟨ cong (_· inv x) (assoc x y (inv y)) ⟩
-    (((x · y) · inv y) · inv x)
-     ≡⟨ sym (assoc (x · y) (inv y) (inv x)) ⟩
-    ((x · y) · inv y · inv x) ∎)
+inv-unique-left : ∀ {ℓ} (𝓖 : Group ℓ) → InvUniqueLeft 𝓖
+inv-unique-left 𝓖 g h p =
+  h                ≡⟨ sym (·IdR h) ⟩
+  h · 1g           ≡⟨ cong (h ·_) (sym (·InvR g)) ⟩
+  h · (g · inv g)  ≡⟨ ·Assoc h g (inv g) ⟩
+  (h · g) · inv g  ≡⟨ cong (_· inv g) p ⟩
+  1g · inv g       ≡⟨ ·IdL (inv g) ⟩
+  inv g ∎
+  where
+    open GroupStr (𝓖 .snd)
 \end{code}
 
-Here we use a lemma to cancel off a \(x \cdot y\) term off the front (which itself involves an associativity move) as well as two associativity moves in the actual proof.
+Most of the proof above consists of bureaucracy of moving around brackets and introducing and deleting identities.
 
 In this work, we present an alternative solution. For every group \(\mathcal{G}\) we are able to find an isomorphic group for which associativity and unitality hold judgmentally. This leverages Cayley's Theorem, which states that every group is isomorphic to a subgroup of a permutation group. By representing permutations as functions, we are able to ensure that associativity and unitality hold ``on the nose''. I will discuss how this can be done and some of the challenges that one faces.
 
 This then allows us to use univalence to obtain that any group is not only isomorphic but actually equal to a group with strict associativity and unitality, which allows us to prove theorems about groups by only proving the theorems for the strictified group. As an example the code above can be reduced to the following:
 \begin{code}
-InvOfComp : ∀ {ℓ} → (𝓖 : Group ℓ) → Type ℓ
-InvOfComp 𝓖 = ∀ g h → inv (g · h) ≡ inv h · inv g
-  where open GroupStr (snd 𝓖)
-
-inv-of-comp : ∀ {ℓ} → (𝓖 : Group ℓ) → InvOfComp 𝓖
-inv-of-comp 𝓖 = strictify InvOfComp
-  λ g h → begin
-    (g ∘ h) ⁻¹ ∘⌊⌋                      ≈⌊ sym (rinv g) ⌋
-    (g ∘ h) ⁻¹ ∘ g ∘⌊⌋∘ g ⁻¹            ≈⌊ sym (rinv h) ⌋
-    ⌊ (g ∘ h) ⁻¹ ∘ g ∘ h ⌋∘ h ⁻¹ ∘ g ⁻¹ ≈⌊ linv (g ∘ h) ⌋
-    h ⁻¹ ∘ g ⁻¹                      ∎′
-      where open import Groups.Reasoning 𝓖
+inv-unique-left-strict : ∀ {ℓ} (𝓖 : Group ℓ) → InvUniqueLeft 𝓖
+inv-unique-left-strict 𝓖 = strictify InvUniqueLeft
+  λ g h p → begin
+    h ∘⌊⌋            ≈˘⌊ ·InvR′ g ⌋
+    ⌊ h ∘ g ⌋∘ g ⁻¹  ≈⌊  p      ⌋
+    g ⁻¹ ∎′
+  where
+    open import Groups.Reasoning 𝓖
 \end{code}
+Here we no longer need to explicitly introduce identities or move brackets around. The simplicity of what remains also allows us to give equational reasoning tools that remove the need to use the \AgdaFunction{cong} function, and this can also be seen in code above.
+
+In the strictified group the following equations hold definitionally:
+\begin{itemize}
+\item \(a  (b c) = (a b) c\),
+\item \(a 1 = a = 1 a\),
+\item \({a^{-1}}^{-1} = a\),
+\item and \((f g)^{-1} = g^{-1} \cdot f^{-1}\).
+\end{itemize}
+We believe this allows proofs about groups to be written in a more natural way and that this work contains a novel way to use univalence to simplifying standard mathematical proofs. The full code for this development can be found at \url{https://github.com/alexarice/GroupsUF}.
 
 
 

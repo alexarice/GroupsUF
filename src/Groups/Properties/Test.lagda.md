@@ -69,18 +69,11 @@ module _ {ℓ} (𝓖 : Group ℓ) where
 
   inv-of-comp : InvOfComp 𝓖
   inv-of-comp = strictify InvOfComp
-    λ g h → begin
-      (g ∘ h) ⁻¹ ∘⌊⌋                        ≈˘⌊ ·InvR′ g       ⌋
-      (g ∘ h) ⁻¹ ∘ g ∘⌊⌋∘ g ⁻¹             ≈˘⌊ ·InvR′ h       ⌋
-      ⌊ (g ∘ h) ⁻¹ ∘ g ∘ h ⌋∘ h ⁻¹ ∘ g ⁻¹ ≈⌊  ·InvL′ (g ∘ h) ⌋
-      h ⁻¹ ∘ g ⁻¹                          ∎′
+    λ g h → refl
 
   inv-involution : InvInvolution 𝓖
   inv-involution = strictify InvInvolution
-    λ g → begin
-      g ⁻¹ ⁻¹ ∘⌊⌋            ≈˘⌊ ·InvL′ g       ⌋
-      ⌊ g ⁻¹ ⁻¹ ∘ g ⁻¹ ⌋∘ g ≈⌊  ·InvL′ (g ⁻¹) ⌋
-      g                          ∎′
+    λ g → refl
 
   inv-unique-right : InvUniqueRight 𝓖
   inv-unique-right = strictify InvUniqueRight
