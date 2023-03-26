@@ -37,7 +37,7 @@ Often when proving basic properties about groups, we end up proving equations us
 
 The usual approaches to these problems involve either putting up with the problem, using a variety of tactics to make the manipulations less painful, or having an array of helper lemmas. None of these methods mirror the approach used in traditional mathematics where it would be very rare to see a bracket written out in a proof.
 
-As an example consider this proof that proves that the inverse of any element in some group \(G\) is unique:
+As an example consider the following (cubical) Agda proof that proves that the inverse of any element in some group \(G\) is unique:
 
 \begin{code}[hide]
 module Abstract.Abstract where
@@ -81,7 +81,7 @@ inv-unique-left-strict 𝓖 = strictify InvUniqueLeft
   where
     open import Groups.Reasoning 𝓖
 \end{code}
-Here we no longer need to explicitly introduce identities or move brackets around. The simplicity of what remains also allows us to give equational reasoning tools that remove the need to use the \AgdaFunction{cong} function, and this can also be seen in code above.
+Here we no longer need to explicitly introduce identities or move brackets around. The simplicity of what remains also allows us to give equational reasoning tools similar to those in the Agda standard library, while also removing the need to use the \AgdaFunction{cong} function (note that the syntax is slightly different to avoid naming clashes). The function \AgdaFunction{strictify} above transports the proof in the strict group back to a proof for an arbitrary group.
 
 In the strictified group the following equations hold definitionally:
 \begin{itemize}
@@ -90,7 +90,7 @@ In the strictified group the following equations hold definitionally:
 \item \({a^{-1}}^{-1} = a\),
 \item and \((f g)^{-1} = g^{-1} \cdot f^{-1}\).
 \end{itemize}
-We believe this allows proofs about groups to be written in a more natural way and that this work contains a novel way to use univalence to simplifying standard mathematical proofs. The full code for this development can be found at \url{https://github.com/alexarice/GroupsUF}.
+We believe this allows proofs about groups to be written in a more natural way and that this work contains a novel way to use univalence to simplifying standard mathematical proofs. The full code for this development can be found at \url{https://github.com/alexarice/GroupsUF}. Although it is written in cubical Agda, it does not rely on the computational properties of cubical, and should work in any proof assistant with Univalence.
 
 
 
