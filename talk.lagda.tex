@@ -1,0 +1,298 @@
+\documentclass[presentation]{beamer}
+
+\usepackage{agda}
+% \usepackage{fancyvrb}
+\usepackage{amsthm}
+
+\newtheorem{prop}[theorem]{Proposition}
+\usepackage{amsmath}
+\usepackage{microtype}
+% \DefineVerbatimEnvironment{code}{Verbatim}{}
+
+\usepackage[utf8]{inputenc}
+
+\usepackage{newunicodechar}
+\newunicodechar{λ}{\ensuremath{\mathnormal\lambda}}
+\newunicodechar{ℓ}{\ensuremath{\mathnormal\ell}}
+\newunicodechar{𝓖}{\ensuremath{\mathcal{G}}}
+\newunicodechar{≡}{\ensuremath{\equiv}}
+\newunicodechar{⟨}{\ensuremath{\langle}}
+\newunicodechar{⟩}{\ensuremath{\rangle}}
+\newunicodechar{⌊}{\ensuremath{\lfloor}}
+\newunicodechar{⌋}{\ensuremath{\rfloor}}
+\newunicodechar{→}{\ensuremath{\mathnormal\to}}
+\newunicodechar{∀}{\ensuremath{\mathnormal\forall}}
+\newunicodechar{∎}{\ensuremath{\mathnormal\qed}}
+\newunicodechar{∘}{\ensuremath{\mathnormal\circ}}
+\newunicodechar{⁻}{\ensuremath{\mathnormal{}^{-}}}
+\newunicodechar{¹}{\ensuremath{\mathnormal{}^{1}}}
+\newunicodechar{≈}{\ensuremath{\mathnormal\approx}}
+\newunicodechar{′}{\ensuremath{\mathnormal{{}^\prime}}}
+\newunicodechar{ε}{\ensuremath{\varepsilon}}
+\newunicodechar{η}{\ensuremath{\eta}}
+\newunicodechar{Σ}{\ensuremath{\Sigma}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{ι}{\ensuremath{\iota}}
+
+\usetheme{Warsaw}
+
+% \affiliation{?}
+
+\title{Strictly Associative Group Theory using Univalence}
+\author{Alex Rice\inst{1}}
+\institute[1]{University of Cambridge}
+\date{HoTT/UF 2023}
+\setbeamertemplate{footline}[frame number]
+\setbeamertemplate{navigation symbols}{}
+
+\begin{document}
+
+{
+  \setbeamertemplate{footline}{}
+  \setbeamertemplate{headline}{} %
+  \begin{frame}[noframenumbering]
+\maketitle
+\end{frame}}
+\begin{frame}{Outline}
+  \tableofcontents
+\end{frame}
+
+\section{What did I do?}
+
+\begin{frame}
+  \frametitle{Motivation}
+  \begin{code}[hide]
+    module talk where
+    open import Cubical.Algebra.Group.Base
+    open import Cubical.Algebra.Group.Properties
+    open import Cubical.Foundations.Structure
+    open import Cubical.Foundations.Prelude
+    open import Groups.Symmetric.Representable using (RSymGroup) renaming (inc≡ to ι≡)
+
+    variable
+      A B C D : Type
+  \end{code}
+
+  \begin{code}
+    InvUniqueLeft : ∀ {ℓ} (𝓖 : Group ℓ) → Type ℓ
+    InvUniqueLeft 𝓖 = ∀ g h → h · g ≡ 1g → h ≡ inv g
+      where
+      open GroupStr (𝓖 .snd)
+  \end{code}
+  \only<2>{\begin{code}
+    inv-unique-left : ∀ {ℓ} (𝓖 : Group ℓ) → InvUniqueLeft 𝓖
+    inv-unique-left 𝓖 g h p =
+      h                ≡⟨ sym (·IdR h) ⟩
+      h · 1g           ≡⟨ cong (h ·_) (sym (·InvR g)) ⟩
+      h · (g · inv g)  ≡⟨ ·Assoc h g (inv g) ⟩
+      (h · g) · inv g  ≡⟨ cong (_· inv g) p ⟩
+      1g · inv g       ≡⟨ ·IdL (inv g) ⟩
+      inv g ∎
+      where
+          open GroupStr (𝓖 .snd)
+  \end{code}}
+
+  \only<3>{\begin{code}
+    inv-unique-left-strict : ∀ {ℓ} (𝓖 : Group ℓ) → InvUniqueLeft 𝓖
+    inv-unique-left-strict 𝓖 = strictify InvUniqueLeft
+      λ g h p →
+        h · 1g         ≡⟨ cong (h ·_) (sym (·InvR g))  ⟩
+        h · g · inv g  ≡⟨ cong (_· inv g) p            ⟩
+        1g · inv g ∎
+        where
+          open GroupStr (RSymGroup 𝓖 .snd)
+          open import Groups.Reasoning 𝓖 using (strictify)
+  \end{code}}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Strictify}
+  \begin{itemize}
+  \item Given a group \AgdaBound{𝓖}, we create a new group \AgdaFunction{RSymGroup}\AgdaSpace{}\AgdaBound{𝓖}.
+    \begin{theorem}[Cayley's Theorem]
+      Every group is isomorphic to a subgroup of a symmetric group.
+    \end{theorem}
+  \item In \AgdaFunction{RSymGroup}\AgdaSpace{}\AgdaBound{𝓖}, various rules hold by reflexivity.
+  \item We show that \AgdaFunction{RSymGroup}\AgdaSpace{}\AgdaBound{𝓖} is isomorphic to 𝓖.
+  \item By univalence and the structure identity principle, \AgdaFunction{RSymGroup}\AgdaSpace{}\AgdaBound{𝓖} is equal to 𝓖.
+  \item The \AgdaFunction{strictify} function transports a proof from \AgdaFunction{RSymGroup}\AgdaSpace{}\AgdaBound{𝓖} back to 𝓖.
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+   In the strictified group the following equations hold definitionally:
+  \begin{itemize}
+  \item \(a  (b c) = (a b) c\),
+  \item \(a 1 = a = 1 a\),
+  \item \({a^{-1}}^{-1} = a\),
+  \item and \((f g)^{-1} = g^{-1} \cdot f^{-1}\).
+  \end{itemize}
+\end{frame}
+
+\section{How did I do it?}
+
+\begin{frame}
+  \frametitle{Functions compose strictly}
+  \begin{theorem}[Cayley's Theorem]
+    Every group is isomorphic to a subgroup of a symmetric group.
+  \end{theorem}
+
+  \pause{}
+  \begin{code}[hide]
+    module A where
+  \end{code}
+  \begin{code}
+      _∘_ : (f : B → C) → (g : A → B) → (A → C)
+      (f ∘ g) x = f (g x)
+
+      comp-assoc  :  (f : C → D)
+                  →  (g : B → C)
+                  →  (h : A → B)
+                  →  f ∘ (g ∘ h) ≡ (f ∘ g) ∘ h
+      comp-assoc f g h = refl
+  \end{code}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Do invertible functions compose strictly?}
+  \begin{code}[hide]
+    module X where
+  \end{code}
+  \begin{code}
+      record Inverse (A : Type) (B : Type) : Type where
+        field
+          ↑ : A → B
+          ↓ : B → A
+          ε : ∀ x  → ↓ (↑ x) ≡ x
+          η : ∀ y  → ↑ (↓ y) ≡ y
+  \end{code}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Strict invertible functions}
+  \begin{code}[hide]
+    module Y where
+  \end{code}
+  \begin{code}
+      record Inverse (A : Type) (B : Type) : Type where
+        constructor ⌊_,_,_,_⌋
+        field
+          ↑ : A → B
+          ↓ : B → A
+          ε : ∀ b x  → x ≡ ↓ b  → ↑ x ≡ b
+          η : ∀ a y  → y ≡ ↑ a  → ↓ y ≡ a
+  \end{code}
+  \begin{code}[hide]
+      infixr 30 _∘_
+  \end{code}
+  \begin{code}
+      _∘_ : Inverse B C → Inverse A B → Inverse A C
+      _∘_ ⌊ f , g , p , q ⌋ ⌊ f' , g' , p' , q' ⌋ =
+        ⌊  (λ x → f (f' x)) ,
+           (λ y → g' (g y)) ,
+           (λ b x r → p b (f' x) (p' (g b) x r)) ,
+           (λ a y r → q' a (g y) (q (f' a) y r)) ⌋
+
+  \end{code}
+  \begin{code}[hide]
+      open Inverse public
+  \end{code}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Strict invertible functions}
+  \begin{code}
+      assoc :  (f : Inverse C D)
+            →  (g : Inverse B C)
+            →  (h : Inverse A B)
+            →  f ∘ (g ∘ h) ≡ (f ∘ g) ∘ h
+      assoc f g h = refl
+
+      id-inv : Inverse A A
+      id-inv = ⌊  (λ x → x) , (λ x → x) ,
+                  (λ b x r → r) , (λ a y r → r) ⌋
+
+      id-unit-left :  (f : Inverse A B)
+                   →  id-inv ∘ f ≡ f
+      id-unit-left f = refl
+
+      id-unit-right :  (f : Inverse A B)
+                    →  f ∘ id-inv ≡ f
+      id-unit-right f = refl
+  \end{code}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Strict invertible functions}
+  \begin{code}
+      inv-inv : Inverse A B → Inverse B A
+      inv-inv ⌊ f , g , ε , η ⌋ = ⌊ g , f , η , ε ⌋
+
+      inv-involution :  (f : Inverse A B)
+                     →  inv-inv (inv-inv f) ≡ f
+      inv-involution f = refl
+
+      inv-comp :  (f : Inverse B C)
+               →  (g : Inverse A B)
+               →  inv-inv (f ∘ g) ≡ inv-inv g ∘ inv-inv f
+      inv-comp f g = refl
+  \end{code}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Representable functions}
+  The map \(\iota : g \mapsto g \cdot \_\) includes the group 𝓖 in the symmetric group. We now want to restrict the symmetric group to those functions that are in the image of \(\iota\).
+
+  \begin{prop}
+    A function \(f : \mathcal{G} → \mathcal{G}\) is in the image of \(\iota\) if and only if for all \(g,h \in 𝓖\), \(f (g \cdot h) = f (g) \cdot h\).
+  \end{prop}
+
+  \pause
+
+  \begin{code}[hide]
+      module _ (𝓖 : Group ℓ-zero) where
+        open GroupStr (𝓖 .snd)
+  \end{code}
+  \begin{code}
+        Representable : Inverse ⟨ 𝓖 ⟩ ⟨ 𝓖 ⟩ → Type
+        Representable f = ∀ x g h → x ≡ g · h → ↑ f x ≡ ↑ f g · h
+
+        Repr : Type
+        Repr = Σ[ f ∈ Inverse ⟨ 𝓖 ⟩ ⟨ 𝓖 ⟩ ] Representable f
+  \end{code}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Representable symmetric group}
+
+  \begin{itemize}
+  \item<+-> Let \AgdaFunction{RSymGroup}\AgdaSpace{}\AgdaBound{𝓖} be the subgroup of the symmetric group on \(\mathcal{G}\) consisting of those functions that are representable.
+
+  \item<+-> This subgroup still has strict composition.
+  \item<+-> The inclusion \(ι\) is an isomorphism from \(\mathcal{G}\) to the representable symmetric group.
+  \item<+-> By univalence we get an equality:
+    \[ \iota\mathord\equiv~\mathcal{G}: \mathcal{G} \equiv \AgdaFunction{RSymGroup}~\mathcal{G} \]
+  \item<+-> This lets us define:
+    \begin{code}
+      strictify :  (𝓖 : Group ℓ-zero)
+                →  (P : Group ℓ-zero → Type)
+                →  P (RSymGroup 𝓖)
+                →  P 𝓖
+      strictify 𝓖 P p = transport (sym (cong P (ι≡ 𝓖))) p
+    \end{code}
+  \end{itemize}
+\end{frame}
+
+\section{Further thoughts}
+\begin{frame}
+  \frametitle{Further thoughts}
+  \pause{}
+  Categories?
+\end{frame}
+\begin{frame}
+  \url{https://alexarice.github.io/posts/sgtuf/Strict-Group-Theory-UF.html}
+\end{frame}
+
+\end{document}
