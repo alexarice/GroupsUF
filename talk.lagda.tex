@@ -1,4 +1,4 @@
-\documentclass[presentation]{beamer}
+\documentclass[aspectratio=169,presentation]{beamer}
 
 \usepackage{agda}
 % \usepackage{fancyvrb}
@@ -42,6 +42,7 @@
 \author{Alex Rice\inst{1}}
 \institute[1]{University of Cambridge}
 \date{HoTT/UF 2023}
+\titlegraphic{\includegraphics[width=0.3\textwidth]{../cambridge}}
 \setbeamertemplate{footline}[frame number]
 \setbeamertemplate{navigation symbols}{}
 
@@ -246,7 +247,7 @@
   The map \(\iota : g \mapsto g \cdot \_\) includes the group 𝓖 in the symmetric group. We now want to restrict the symmetric group to those functions that are in the image of \(\iota\).
 
   \begin{prop}
-    A function \(f : \mathcal{G} → \mathcal{G}\) is in the image of \(\iota\) if and only if for all \(g,h \in 𝓖\), \(f (g \cdot h) = f (g) \cdot h\).
+    A function \(f : \mathcal{G} \to \mathcal{G}\) is in the image of \(\iota\) if and only if for all \(g,h \in 𝓖\), \(f (g \cdot h) = f (g) \cdot h\).
   \end{prop}
 
   \pause
