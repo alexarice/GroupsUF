@@ -1,5 +1,25 @@
 \documentclass[aspectratio=169,presentation]{beamer}
 
+
+% Credit to George Kaye for color theme
+\definecolor{backg}{RGB}{9,72,61}
+\definecolor{accent}{RGB}{0,150,136}
+
+\definecolor{dracback}{RGB}{40, 42, 54}
+\definecolor{dracfore}{RGB}{248, 248, 242}
+\definecolor{dractitle}{RGB}{56, 58, 89}
+\definecolor{dracblock}{RGB}{98, 114, 164}
+\definecolor{draccent}{RGB}{255, 121, 198}
+
+\setbeamercolor{normal text}{bg=dracfore}
+\setbeamercolor{frametitle}{bg=dractitle, fg=dracfore}
+\setbeamercolor{title separator}{fg=draccent}
+\setbeamercolor{progress bar}{fg=draccent, bg=draccent}
+\setbeamercolor{block title}{fg=dracfore, bg=dracblock}
+\setbeamercolor{alerted text}{fg=draccent}
+\setbeamercolor{structure}{fg=dractitle}
+
+
 \usepackage{agda}
 % \usepackage{fancyvrb}
 \usepackage{amsthm}
