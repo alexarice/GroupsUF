@@ -182,8 +182,8 @@
         field
           ↑ : A → B
           ↓ : B → A
-          ε : ∀ b x  → x ≡ ↓ b  → ↑ x ≡ b
-          η : ∀ a y  → y ≡ ↑ a  → ↓ y ≡ a
+          ε : ∀ b {x}  → x ≡ ↓ b  → ↑ x ≡ b
+          η : ∀ a {y}  → y ≡ ↑ a  → ↓ y ≡ a
   \end{code}
   \begin{code}[hide]
       infixr 30 _∘_
@@ -193,8 +193,8 @@
       _∘_ ⌊ f , g , p , q ⌋ ⌊ f' , g' , p' , q' ⌋ =
         ⌊  (λ x → f (f' x)) ,
            (λ y → g' (g y)) ,
-           (λ b x r → p b (f' x) (p' (g b) x r)) ,
-           (λ a y r → q' a (g y) (q (f' a) y r)) ⌋
+           (λ b r → p b (p' (g b) r)) ,
+           (λ a r → q' a (q (f' a) r)) ⌋
 
   \end{code}
   \begin{code}[hide]
@@ -213,7 +213,7 @@
 
       id-inv : Inverse A A
       id-inv = ⌊  (λ x → x) , (λ x → x) ,
-                  (λ b x r → r) , (λ a y r → r) ⌋
+                  (λ b r → r) , (λ a r → r) ⌋
 
       id-unit-left :  (f : Inverse A B)
                    →  id-inv ∘ f ≡ f
@@ -290,10 +290,20 @@
 \begin{frame}
   \frametitle{Further thoughts}
   \pause{}
-  Categories?
+  \begin{center}
+    Does this all work with categories instead of groups?
+  \end{center}
 \end{frame}
 \begin{frame}
-  \url{https://alexarice.github.io/posts/sgtuf/Strict-Group-Theory-UF.html}
+  \frametitle{Conclusion}
+  \begin{itemize}
+  \item For each group \(\mathcal{G}\) we can generate an isomorphic group \(\AgdaFunction{RSymGroup}~\mathcal{G}\).
+  \item This group has nice definitional properties
+  \item Univalence allows us to generate an equality between the two groups.
+  \item This allows us to prove theorems about an arbitrary group by instead proving them on the strictified group.
+  \item \small\url{https://alexarice.github.io/posts/sgtuf/Strict-Group-Theory-UF.html}
+  \end{itemize}
+
 \end{frame}
 
 \end{document}
