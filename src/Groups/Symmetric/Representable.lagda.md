@@ -24,9 +24,9 @@ open import Groups.Function.Inverse
 open import Groups.Symmetric
 open import Groups.Symmetric.Inclusion 𝓖
 
-open GroupStr (𝓖 .snd) using (_·_;1g;inv)
-open GroupStr (SymGroup .snd) using () renaming (_·_ to _·′_; 1g to 1gs; inv to _⁻¹)
-open GroupStr hiding (_·_;1g;inv)
+open GroupStr (𝓖 .snd) using (_·_;1g;inv;is-set)
+open GroupStr (SymGroup .snd) using () renaming (_·_ to _·′_; 1g to 1gs; inv to _⁻¹; is-set to is-set-sym)
+open GroupStr hiding (_·_;1g;inv;is-set)
 ```
 
 </details>
@@ -49,10 +49,10 @@ Repr = Σ[ f ∈ ⟨ SymGroup ⟩ ] Representable (fst f) × Representable (fst 
 
 rep-prop : (f : ⟨ 𝓖 ⟩ → ⟨ 𝓖 ⟩) → isProp (Representable f)
 rep-prop f = isPropΠ2 (λ x y →
-             isPropΠ2 λ w z → (isSetGroup 𝓖 (f x) (f y · w)))
+             isPropΠ2 λ w z → (is-set (f x) (f y · w)))
 
 repΣ-set : isSet Repr
-repΣ-set = isSetΣ (isSetGroup SymGroup) λ f → isProp→isSet (isProp× (rep-prop (fst f)) (rep-prop (fst (snd f))))
+repΣ-set = isSetΣ is-set-sym λ f → isProp→isSet (isProp× (rep-prop (fst f)) (rep-prop (fst (snd f))))
 ```
 
 As `Representable f` is a prop we can prove that `Repr`s are equal if the underlying permutations are.
@@ -158,7 +158,7 @@ and that any representable element is the image of an included element
 ```agda
 Repr-inc : ∀ (f : Repr) → Σ[ g ∈ ⟨ 𝓖 ⟩ ] inc g ≡ fst f
 Repr-inc (a@(f , rest) , rf , rf′) = (f 1g) ,
-  inverse-equality-lemma (inc (f 1g)) a (isSetGroup 𝓖) (isSetGroup 𝓖)
+  inverse-equality-lemma (inc (f 1g)) a is-set is-set
                          λ x → sym (rf x 1g x (sym (·IdL (𝓖 .snd) x)))
 ```
 

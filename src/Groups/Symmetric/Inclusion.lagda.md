@@ -24,7 +24,7 @@ open GroupStr (𝓖 .snd)
 
 ```agda
 SymGroup : Group ℓ
-SymGroup = Symmetric-Group ⟨ 𝓖 ⟩ (isSetGroup 𝓖)
+SymGroup = Symmetric-Group ⟨ 𝓖 ⟩ is-set
 ```
 
 The inclusion takes `g` to the function `λ x → g · x` with inverse `λ x → g ⁻¹ · x`
@@ -64,12 +64,12 @@ inc-injective x y p =
 
 open GroupStr (SymGroup .snd) using () renaming (_·_ to _·′_; 1g to 1gs; inv to invs)
 inc-homo : (x y : ⟨ 𝓖 ⟩) → inc (x · y) ≡ (inc x) ·′ (inc y)
-inc-homo x y = inverse-equality-lemma _ _ (isSetGroup 𝓖) (isSetGroup 𝓖)
+inc-homo x y = inverse-equality-lemma _ _ is-set is-set
   λ g → sym (·Assoc x y g)
 
 inc-pres1 : inc 1g ≡ 1gs
-inc-pres1 = inverse-equality-lemma (inc 1g) 1gs (isSetGroup 𝓖) (isSetGroup 𝓖) ·IdL
+inc-pres1 = inverse-equality-lemma (inc 1g) 1gs is-set is-set ·IdL
 
 inc-pres-inv : (g : ⟨ 𝓖 ⟩) → inc (inv g) ≡ invs (inc g)
-inc-pres-inv g = inverse-equality-lemma (inc (inv g)) (invs (inc g)) (isSetGroup 𝓖) (isSetGroup 𝓖) (λ x → refl)
+inc-pres-inv g = inverse-equality-lemma (inc (inv g)) (invs (inc g)) is-set is-set (λ x → refl)
 ```
